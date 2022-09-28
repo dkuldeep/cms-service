@@ -18,6 +18,7 @@ public class Post extends Webpage {
   private String content;
 
   @Column private String type;
+  @Column private boolean active;
 
   public int getId() {
     return id;
@@ -41,5 +42,13 @@ public class Post extends Webpage {
 
   public void setType(String type) {
     this.type = type;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 }

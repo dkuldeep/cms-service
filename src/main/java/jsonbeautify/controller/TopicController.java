@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@CrossOrigin(origins = {"http://localhost:3000", "https://jsonbeautify.net"})
 @RestController
 @RequestMapping("/topics")
 public class TopicController {

@@ -14,4 +14,10 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
 
   @Query(value = "SELECT slug FROM tbl_post WHERE type = ?1 and active = ?2", nativeQuery = true)
   public List<String> getSlugsByType(String type, boolean active);
+
+  @Query(value = "SELECT * FROM tbl_post WHERE type = ?1", nativeQuery = true)
+  public List<Post> getPostsByType(String type);
+
+  @Query(value = "SELECT * FROM tbl_post WHERE type is null or type = 'UNKNOWN'", nativeQuery = true)
+  public List<Post> getPostsByTypeUnknown();
 }

@@ -1,17 +1,13 @@
-package jsonbeautify.model;
+package jsonbeautify.dto;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-@MappedSuperclass
-public class Webpage {
-
-  @Column(unique = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class WebpageDto {
   private String slug;
-
-  @Column private String title;
-  @Column private String keywords;
-  @Column private String description;
+  private String title;
+  private String keywords;
+  private String description;
 
   public String getSlug() {
     return slug;

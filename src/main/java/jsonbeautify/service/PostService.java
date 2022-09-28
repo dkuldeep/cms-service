@@ -35,11 +35,20 @@ public class PostService {
     postRepository.deleteById(id);
   }
 
-  public Post getBySlug(String slug) {
-    return postRepository.getBySlug(slug);
+  public Optional<Post> getBySlug(String slug) {
+    Post post = postRepository.getBySlug(slug);
+    return post == null ? Optional.empty() : Optional.of(post);
   }
 
   public List<String> getSlugsByType(String type) {
     return postRepository.getSlugsByType(type, true);
+  }
+
+  public List<Post> getPostsByType(String type) {
+    return postRepository.getPostsByType(type);
+  }
+
+  public List<Post> getPostsByTypeUnknown() {
+    return postRepository.getPostsByTypeUnknown();
   }
 }

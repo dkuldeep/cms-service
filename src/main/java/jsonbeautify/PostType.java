@@ -1,8 +1,8 @@
 package jsonbeautify;
 
 public enum PostType {
-  POST,
   PAGE,
+  POST,
   UNKNOWN,
   FORMATTER
 }
