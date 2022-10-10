@@ -1,10 +1,12 @@
 package jsonbeautify.controller;
 
 import jsonbeautify.PostType;
+import jsonbeautify.TagEnum;
+import jsonbeautify.TopicEnum;
 import jsonbeautify.dto.PostContentDto;
-import jsonbeautify.dto.PostWithoutContentDto;
-import jsonbeautify.dto.SlugsDto;
-import jsonbeautify.model.Post;
+import jsonbeautify.dto.PostDto;
+import jsonbeautify.dto.TagDto;
+import jsonbeautify.entity.Post;
 import jsonbeautify.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,8 +20,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,28 +39,35 @@ public class PostController {
   }
 
   @GetMapping("")
-  private List<PostWithoutContentDto> findAll(@RequestParam(required = false) String type) {
+  private List<PostDto> findAll(
+      @RequestParam(required = false) String type, @RequestParam(required = false) String topic) {
     List<Post> posts = new ArrayList<>();
+    if (topic != null) {
+      List<Post> posts1 = postService.getPostsByTopic(topic);
+      return posts1.stream().map(this::transform).collect(Collectors.toList());
+    }
     if (type == null || type.trim().equals("")) {
       posts = postService.findAll();
     } else if (PostType.PAGE.name().equalsIgnoreCase(type)
         || PostType.POST.name().equalsIgnoreCase(type)
         || PostType.FORMATTER.name().equalsIgnoreCase(type)) {
       posts = postService.getPostsByType(type);
-    } else if (PostType.UNKNOWN.name().equalsIgnoreCase(type) || type.equalsIgnoreCase("misc")) {
+    } else if (PostType.MISC.name().equalsIgnoreCase(type) || type.equalsIgnoreCase("misc")) {
       posts = postService.getPostsByTypeUnknown();
     }
     return posts.stream().map(this::transform).collect(Collectors.toList());
   }
 
   @PostMapping("")
-  private int create(@RequestBody PostWithoutContentDto dto) {
-    Post post = postService.saveOrUpdate(transform(dto));
+  private int create(@RequestBody PostDto dto) {
+    Post post = new Post();
+    transform(dto, post);
+    post = postService.saveOrUpdate(post);
     return post == null ? -1 : post.getId();
   }
 
   @GetMapping("/{id}")
-  private PostWithoutContentDto findById(@PathVariable int id) {
+  private PostDto findById(@PathVariable int id) {
     Optional<Post> optional = postService.findById(id);
     if (optional.isPresent()) {
       return transform(optional.get());
@@ -64,41 +76,13 @@ public class PostController {
     }
   }
 
-  @GetMapping("/{id}/content")
-  private PostContentDto getContentById(@PathVariable("id") int id) {
-    Optional<Post> optional = postService.findById(id);
-    if (optional.isPresent()) {
-      Post existingPost = optional.get();
-      return new PostContentDto(existingPost.getContent());
-    } else {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with id: " + id);
-    }
-  }
-
   @PutMapping("/{id}")
-  private PostWithoutContentDto updateById(@RequestBody PostWithoutContentDto dto, @PathVariable("id") int id) {
+  private PostDto updateById(@RequestBody PostDto dto, @PathVariable("id") int id) {
     Optional<Post> optional = postService.findById(id);
     if (optional.isPresent()) {
       Post existingPost = optional.get();
-      existingPost.setTitle(dto.getTitle());
-      existingPost.setKeywords(dto.getKeywords());
-      existingPost.setDescription(dto.getDescription());
-      existingPost.setSlug(dto.getSlug());
-      existingPost.setType(dto.getType());
-      existingPost.setActive(dto.isActive());
-      return transform(postService.saveOrUpdate(existingPost));
-    } else {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with id: " + id);
-    }
-  }
-
-  @PutMapping("/{id}/content")
-  private PostWithoutContentDto updateContentById(
-      @RequestBody PostContentDto dto, @PathVariable("id") int id) {
-    Optional<Post> optional = postService.findById(id);
-    if (optional.isPresent()) {
-      Post existingPost = optional.get();
-      existingPost.setContent(dto.getContent());
+      transform(dto, existingPost);
+      existingPost.setModified(LocalDate.now());
       return transform(postService.saveOrUpdate(existingPost));
     } else {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with id: " + id);
@@ -110,8 +94,31 @@ public class PostController {
     postService.deleteById(id);
   }
 
+  @GetMapping("/{id}/content")
+  private PostContentDto getContentById(@PathVariable("id") int id) {
+    Optional<Post> optional = postService.findById(id);
+    if (optional.isPresent()) {
+      return new PostContentDto(optional.get());
+    } else {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with id: " + id);
+    }
+  }
+
+  @PutMapping("/{id}/content")
+  private PostDto updateContentById(@RequestBody PostContentDto dto, @PathVariable("id") int id) {
+    Optional<Post> optional = postService.findById(id);
+    if (optional.isPresent()) {
+      Post existingPost = optional.get();
+      existingPost.setContent(dto.getContent());
+      existingPost.setModified(LocalDate.now());
+      return transform(postService.saveOrUpdate(existingPost));
+    } else {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with id: " + id);
+    }
+  }
+
   @GetMapping("getPostBySlug")
-  private PostWithoutContentDto getPostBySlug(@RequestParam String slug) {
+  private PostDto getPostBySlug(@RequestParam String slug) {
     Optional<Post> optional = postService.getBySlug(slug);
     if (optional.isPresent()) {
       return transform(optional.get());
@@ -124,21 +131,14 @@ public class PostController {
   private PostContentDto getContentBySlug(@RequestParam String slug) {
     Optional<Post> optional = postService.getBySlug(slug);
     if (optional.isPresent()) {
-      return new PostContentDto(optional.get().getContent());
+      return new PostContentDto(optional.get());
     } else {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with slug: " + slug);
     }
   }
 
-  @GetMapping("/getSlugsByType")
-  public SlugsDto getSlugsByType(@RequestParam(required = false) String type) {
-    SlugsDto dto = new SlugsDto();
-    dto.setSlugs(postService.getSlugsByType(type));
-    return dto;
-  }
-
-  private PostWithoutContentDto transform(Post post) {
-    PostWithoutContentDto dto = new PostWithoutContentDto();
+  private PostDto transform(Post post) {
+    PostDto dto = new PostDto();
     dto.setActive(post.isActive());
     dto.setId(post.getId());
     dto.setType(post.getType());
@@ -146,17 +146,39 @@ public class PostController {
     dto.setKeywords(post.getKeywords());
     dto.setSlug(post.getSlug());
     dto.setTitle(post.getTitle());
+    dto.setModified(post.getModified());
+    dto.setCreated(post.getCreated());
+
+    dto.setTags(
+        Arrays.stream(post.getTags().split(","))
+            .map(TagEnum::getBySlug)
+            .filter(Objects::nonNull)
+            .map(TagEnum::toTagDto)
+            .collect(Collectors.toList()));
+
+    TopicEnum topic = TopicEnum.getBySlug(post.getTopic());
+    if (topic != null) {
+      dto.setTopic(topic.toTopicDto());
+    }
     return dto;
   }
 
-  private Post transform(PostWithoutContentDto dto) {
-    Post post = new Post();
-    post.setActive(dto.isActive());
-    post.setType(dto.getType() == null ? PostType.UNKNOWN.name() : dto.getType());
-    post.setDescription(dto.getDescription());
-    post.setKeywords(dto.getKeywords());
-    post.setSlug(dto.getSlug());
-    post.setTitle(dto.getTitle());
-    return post;
+  private void transform(PostDto source, Post target) {
+    target.setActive(source.isActive());
+    target.setType(source.getType() == null ? PostType.MISC.name() : source.getType());
+    target.setDescription(source.getDescription());
+    target.setKeywords(source.getKeywords());
+    target.setSlug(source.getSlug());
+    target.setTitle(source.getTitle());
+    target.setCreated(LocalDate.now());
+    target.setTags(String.join(",", source.getReqTags()));
+    target.setTopic(source.getReqTopic());
+  }
+
+  private TagDto mapToTag(String slug) {
+    TagDto tagDto = new TagDto();
+    tagDto.setSlug(slug);
+    tagDto.setName(TagEnum.getBySlug(slug).getName());
+    return tagDto;
   }
 }

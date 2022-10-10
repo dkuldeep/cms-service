@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = {"jsonbeautify.repository"})
-@EntityScan(basePackages = {"jsonbeautify.model"})
+@EntityScan(basePackages = {"jsonbeautify.entity"})
 public class ApiApplication extends SpringBootServletInitializer {
 
   public static void main(String[] args) {

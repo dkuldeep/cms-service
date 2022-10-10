@@ -1,9 +1,10 @@
 package jsonbeautify.controller;
 
-import jsonbeautify.model.Topic;
+import jsonbeautify.TopicEnum;
+import jsonbeautify.dto.TopicDto;
+import jsonbeautify.entity.Topic;
 import jsonbeautify.service.TopicService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,10 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/topics")
@@ -28,11 +30,8 @@ public class TopicController {
   }
 
   @GetMapping("")
-  public List<Topic> findAll() {
-    Iterable<Topic> topics = topicService.findAll();
-    List<Topic> list = new ArrayList<>();
-    topics.forEach(list::add);
-    return list;
+  public List<TopicDto> findAll() {
+    return Arrays.stream(TopicEnum.values()).map(TopicEnum::toTopicDto).collect(Collectors.toList());
   }
 
   @PostMapping("")

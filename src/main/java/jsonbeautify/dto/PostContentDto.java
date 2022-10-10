@@ -1,13 +1,14 @@
 package jsonbeautify.dto;
 
+import jsonbeautify.entity.Post;
+
 public class PostContentDto {
   private String content;
 
-  public PostContentDto() {
-  }
+  public PostContentDto() {}
 
-  public PostContentDto(String content) {
-    this.content = content;
+  public PostContentDto(Post post) {
+    this.content = post.getContent();
   }
 
   public String getContent() {

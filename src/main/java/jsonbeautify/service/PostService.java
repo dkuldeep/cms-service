@@ -1,6 +1,7 @@
 package jsonbeautify.service;
 
-import jsonbeautify.model.Post;
+import jsonbeautify.PostType;
+import jsonbeautify.entity.Post;
 import jsonbeautify.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
@@ -40,15 +41,19 @@ public class PostService {
     return post == null ? Optional.empty() : Optional.of(post);
   }
 
-  public List<String> getSlugsByType(String type) {
-    return postRepository.getSlugsByType(type, true);
-  }
-
   public List<Post> getPostsByType(String type) {
     return postRepository.getPostsByType(type);
   }
 
   public List<Post> getPostsByTypeUnknown() {
-    return postRepository.getPostsByTypeUnknown();
+    List<String> knownTypes = new ArrayList<>();
+    knownTypes.add(PostType.PAGE.name());
+    knownTypes.add(PostType.POST.name());
+    knownTypes.add(PostType.FORMATTER.name());
+    return postRepository.getPostsByTypeUnknown(knownTypes);
+  }
+
+  public List<Post> getPostsByTopic(String topic) {
+    return postRepository.getPostsByTopic(topic);
   }
 }

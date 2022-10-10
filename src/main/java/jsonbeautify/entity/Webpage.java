@@ -1,4 +1,4 @@
-package jsonbeautify.model;
+package jsonbeautify.entity;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -9,7 +9,9 @@ public class Webpage {
   @Column(unique = true)
   private String slug;
 
-  @Column private String title;
+  @Column(nullable = false)
+  private String title;
+
   @Column private String keywords;
   @Column private String description;
 

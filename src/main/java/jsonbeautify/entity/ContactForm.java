@@ -1,4 +1,4 @@
-package jsonbeautify.model;
+package jsonbeautify.entity;
 
 public class ContactForm {
   private String name;

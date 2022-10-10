@@ -1,6 +1,6 @@
 package jsonbeautify.service;
 
-import jsonbeautify.model.Topic;
+import jsonbeautify.entity.Topic;
 import jsonbeautify.repository.TopicRepository;
 import org.springframework.stereotype.Service;
 
