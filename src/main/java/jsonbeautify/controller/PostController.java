@@ -5,7 +5,6 @@ import jsonbeautify.TagEnum;
 import jsonbeautify.TopicEnum;
 import jsonbeautify.dto.PostContentDto;
 import jsonbeautify.dto.PostDto;
-import jsonbeautify.dto.TagDto;
 import jsonbeautify.entity.Post;
 import jsonbeautify.service.PostService;
 import org.springframework.http.HttpStatus;
@@ -40,10 +39,14 @@ public class PostController {
 
   @GetMapping("")
   private List<PostDto> findAll(
-      @RequestParam(required = false) String type, @RequestParam(required = false) String topic) {
+      @RequestParam(required = false) String type, @RequestParam(required = false) String topic, @RequestParam(required = false) String tag) {
     List<Post> posts = new ArrayList<>();
     if (topic != null) {
       List<Post> posts1 = postService.getPostsByTopic(topic);
+      return posts1.stream().map(this::transform).collect(Collectors.toList());
+    }
+    if (tag != null) {
+      List<Post> posts1 = postService.getPostsByTag(tag);
       return posts1.stream().map(this::transform).collect(Collectors.toList());
     }
     if (type == null || type.trim().equals("")) {
@@ -61,6 +64,7 @@ public class PostController {
   @PostMapping("")
   private int create(@RequestBody PostDto dto) {
     Post post = new Post();
+    post.setCreated(LocalDate.now());
     transform(dto, post);
     post = postService.saveOrUpdate(post);
     return post == null ? -1 : post.getId();
@@ -81,8 +85,8 @@ public class PostController {
     Optional<Post> optional = postService.findById(id);
     if (optional.isPresent()) {
       Post existingPost = optional.get();
-      transform(dto, existingPost);
       existingPost.setModified(LocalDate.now());
+      transform(dto, existingPost);
       return transform(postService.saveOrUpdate(existingPost));
     } else {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with id: " + id);
@@ -160,25 +164,22 @@ public class PostController {
     if (topic != null) {
       dto.setTopic(topic.toTopicDto());
     }
+    if (post.getTopic().isEmpty()) {
+      dto.setPath("/" + post.getSlug());
+    } else {
+      dto.setPath("/" + post.getTopic() + "/" + post.getSlug());
+    }
     return dto;
   }
 
   private void transform(PostDto source, Post target) {
     target.setActive(source.isActive());
-    target.setType(source.getType() == null ? PostType.MISC.name() : source.getType());
+    target.setType(source.getType());
     target.setDescription(source.getDescription());
     target.setKeywords(source.getKeywords());
     target.setSlug(source.getSlug());
     target.setTitle(source.getTitle());
-    target.setCreated(LocalDate.now());
     target.setTags(String.join(",", source.getReqTags()));
     target.setTopic(source.getReqTopic());
-  }
-
-  private TagDto mapToTag(String slug) {
-    TagDto tagDto = new TagDto();
-    tagDto.setSlug(slug);
-    tagDto.setName(TagEnum.getBySlug(slug).getName());
-    return tagDto;
   }
 }

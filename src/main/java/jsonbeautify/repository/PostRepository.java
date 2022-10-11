@@ -21,4 +21,7 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
 
   @Query("select p from Post p where p.topic = :topic and p.type = 'POST' order by p.created desc ")
   List<Post> getPostsByTopic(String topic);
+
+  @Query("select p from Post p where p.tags like %:tag% and p.type = 'POST' order by p.created desc ")
+  List<Post> getPostsByTag(String tag);
 }

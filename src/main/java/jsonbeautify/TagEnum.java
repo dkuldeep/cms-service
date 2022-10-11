@@ -37,6 +37,7 @@ public enum TagEnum {
     TagDto dto = new TagDto();
     dto.setSlug(slug);
     dto.setName(name);
+    dto.setPath("/tags/" + slug);
     return dto;
   }
 }

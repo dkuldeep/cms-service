@@ -5,6 +5,7 @@ public class TopicDto {
   private String name;
   String logoPath;
   String description;
+  String path;
 
   public String getSlug() {
     return slug;
@@ -36,5 +37,13 @@ public class TopicDto {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
   }
 }

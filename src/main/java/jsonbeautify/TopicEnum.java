@@ -48,6 +48,7 @@ public enum TopicEnum {
     dto.setName(name);
     dto.setLogoPath(logoPath);
     dto.setDescription(description);
+    dto.setPath("/" + slug);
     return dto;
   }
 }

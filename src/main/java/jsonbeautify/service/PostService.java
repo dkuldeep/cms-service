@@ -56,4 +56,8 @@ public class PostService {
   public List<Post> getPostsByTopic(String topic) {
     return postRepository.getPostsByTopic(topic);
   }
+
+  public List<Post> getPostsByTag(String tag) {
+    return postRepository.getPostsByTag(tag);
+  }
 }
