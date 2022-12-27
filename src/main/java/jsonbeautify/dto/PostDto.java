@@ -13,7 +13,6 @@ public class PostDto extends WebpageDto {
   private LocalDate created;
   private LocalDate modified;
   private List<TagDto> tags;
-  private TopicDto topic;
   private String path;
 
   private String reqTopic;
@@ -65,14 +64,6 @@ public class PostDto extends WebpageDto {
 
   public void setTags(List<TagDto> tags) {
     this.tags = tags;
-  }
-
-  public TopicDto getTopic() {
-    return topic;
-  }
-
-  public void setTopic(TopicDto topic) {
-    this.topic = topic;
   }
 
   public String getReqTopic() {

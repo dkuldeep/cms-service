@@ -2,7 +2,6 @@ package jsonbeautify.controller;
 
 import jsonbeautify.PostType;
 import jsonbeautify.TagEnum;
-import jsonbeautify.TopicEnum;
 import jsonbeautify.dto.PostContentDto;
 import jsonbeautify.dto.PostDto;
 import jsonbeautify.entity.Post;
@@ -38,8 +37,7 @@ public class PostController {
   }
 
   @GetMapping("")
-  private List<PostDto> findAll(
-      @RequestParam(required = false) String type, @RequestParam(required = false) String topic, @RequestParam(required = false) String tag) {
+  private List<PostDto> findAll(@RequestParam(required = false) String type, @RequestParam(required = false) String topic, @RequestParam(required = false) String tag) {
     List<Post> posts = new ArrayList<>();
     if (topic != null) {
       List<Post> posts1 = postService.getPostsByTopic(topic);
@@ -160,10 +158,6 @@ public class PostController {
             .map(TagEnum::toTagDto)
             .collect(Collectors.toList()));
 
-    TopicEnum topic = TopicEnum.getBySlug(post.getTopic());
-    if (topic != null) {
-      dto.setTopic(topic.toTopicDto());
-    }
     if (post.getTopic().isEmpty()) {
       dto.setPath("/" + post.getSlug());
     } else {
