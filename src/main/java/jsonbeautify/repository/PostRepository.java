@@ -11,9 +11,7 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
   @Query(value = "SELECT * FROM tbl_post WHERE slug = ?1", nativeQuery = true)
   public Post getBySlug(String slug);
 
-  @Query(
-      value = "SELECT * FROM tbl_post WHERE type = ?1 ORDER BY created desc ",
-      nativeQuery = true)
+  @Query(value = "select p from Post p where p.type = :type ORDER BY p.modified desc ")
   public List<Post> getPostsByType(String type);
 
   @Query(value = "SELECT * FROM tbl_post WHERE type is null or type not in ?1", nativeQuery = true)

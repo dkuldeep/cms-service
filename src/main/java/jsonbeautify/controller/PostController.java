@@ -1,7 +1,6 @@
 package jsonbeautify.controller;
 
 import jsonbeautify.PostType;
-import jsonbeautify.TagEnum;
 import jsonbeautify.dto.PostContentDto;
 import jsonbeautify.dto.PostDto;
 import jsonbeautify.entity.Post;
@@ -18,11 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,7 +60,7 @@ public class PostController {
   @PostMapping("")
   private int create(@RequestBody PostDto dto) {
     Post post = new Post();
-    post.setCreated(LocalDate.now());
+    post.setCreated(LocalDateTime.now());
     transform(dto, post);
     post = postService.saveOrUpdate(post);
     return post == null ? -1 : post.getId();
@@ -83,7 +81,7 @@ public class PostController {
     Optional<Post> optional = postService.findById(id);
     if (optional.isPresent()) {
       Post existingPost = optional.get();
-      existingPost.setModified(LocalDate.now());
+      existingPost.setModified(LocalDateTime.now());
       transform(dto, existingPost);
       return transform(postService.saveOrUpdate(existingPost));
     } else {
@@ -112,7 +110,7 @@ public class PostController {
     if (optional.isPresent()) {
       Post existingPost = optional.get();
       existingPost.setContent(dto.getContent());
-      existingPost.setModified(LocalDate.now());
+      existingPost.setModified(LocalDateTime.now());
       return transform(postService.saveOrUpdate(existingPost));
     } else {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with id: " + id);
@@ -150,17 +148,9 @@ public class PostController {
     dto.setTitle(post.getTitle());
     dto.setModified(post.getModified());
     dto.setCreated(post.getCreated());
-
-    dto.setTags(
-        Arrays.stream(post.getTags().split(","))
-            .map(TagEnum::getBySlug)
-            .filter(Objects::nonNull)
-            .map(TagEnum::toTagDto)
-            .collect(Collectors.toList()));
-
-    if (post.getTopic().isEmpty()) {
-      dto.setPath("/" + post.getSlug());
-    } else {
+    dto.setTopic(post.getTopic());
+    dto.setTags(Arrays.asList(post.getTags().split(",")));
+    if ("POST".equalsIgnoreCase(post.getType())) {
       dto.setPath("/" + post.getTopic() + "/" + post.getSlug());
     }
     return dto;
@@ -173,7 +163,7 @@ public class PostController {
     target.setKeywords(source.getKeywords());
     target.setSlug(source.getSlug());
     target.setTitle(source.getTitle());
-    target.setTags(String.join(",", source.getReqTags()));
-    target.setTopic(source.getReqTopic());
+    target.setTags(String.join(",", source.getTags()));
+    target.setTopic(source.getTopic());
   }
 }

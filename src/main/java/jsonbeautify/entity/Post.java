@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tbl_post")
@@ -18,8 +19,8 @@ public class Post extends Webpage {
 
   @Column private String type;
   @Column private boolean active;
-  @Column private LocalDate created;
-  @Column private LocalDate modified;
+  @Column private LocalDateTime created;
+  @Column private LocalDateTime modified;
 
   @Column(columnDefinition = "varchar(255) default ''")
   private String tags;
@@ -59,19 +60,19 @@ public class Post extends Webpage {
     this.active = active;
   }
 
-  public LocalDate getModified() {
+  public LocalDateTime getModified() {
     return modified;
   }
 
-  public void setModified(LocalDate modified) {
+  public void setModified(LocalDateTime modified) {
     this.modified = modified;
   }
 
-  public LocalDate getCreated() {
+  public LocalDateTime getCreated() {
     return created;
   }
 
-  public void setCreated(LocalDate created) {
+  public void setCreated(LocalDateTime created) {
     this.created = created;
   }
 
