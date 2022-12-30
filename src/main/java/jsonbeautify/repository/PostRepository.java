@@ -8,13 +8,13 @@ import java.util.List;
 
 public interface PostRepository extends CrudRepository<Post, Integer> {
 
-  @Query(value = "SELECT * FROM tbl_post WHERE slug = ?1", nativeQuery = true)
+  @Query("SELECT p from Post p WHERE p.slug = ?1")
   public Post getBySlug(String slug);
 
-  @Query(value = "select p from Post p where p.type = :type ORDER BY p.modified desc ")
+  @Query("select p from Post p where p.type = :type ORDER BY p.modified desc ")
   public List<Post> getPostsByType(String type);
 
-  @Query(value = "SELECT * FROM tbl_post WHERE type is null or type not in ?1", nativeQuery = true)
+  @Query("select p from Post p where p.type is null or p.type not in :knownTypes")
   public List<Post> getPostsByTypeUnknown(List<String> knownTypes);
 
   @Query("select p from Post p where p.topic = :topic and p.type = 'POST' order by p.created desc ")

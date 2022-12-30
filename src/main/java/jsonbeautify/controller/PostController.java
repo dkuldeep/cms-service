@@ -35,7 +35,11 @@ public class PostController {
   }
 
   @GetMapping("")
-  private List<PostDto> findAll(@RequestParam(required = false) String type, @RequestParam(required = false) String topic, @RequestParam(required = false) String tag) {
+  private List<PostDto> findAll(
+      @RequestParam(required = false) String type,
+      @RequestParam(required = false) String topic,
+      @RequestParam(required = false) String tag) {
+
     List<Post> posts = new ArrayList<>();
     if (topic != null) {
       List<Post> posts1 = postService.getPostsByTopic(topic);
