@@ -1,4 +1,4 @@
-package jsonbeautify;
+package com.cms;
 
 public enum PostType {
   PAGE,
