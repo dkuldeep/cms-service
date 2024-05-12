@@ -4,10 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+import javax.validation.constraints.NotBlank;
+import java.util.Collections;
 import java.util.List;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PostCreateRequest extends WebpageDto {
+
+    @JsonProperty
+    @NotBlank
+    private String title;
 
     @JsonProperty
     private String excerpt;
@@ -16,10 +22,10 @@ public class PostCreateRequest extends WebpageDto {
     private String content;
 
     @JsonProperty
-    private List<Integer> tags;
+    private List<Integer> tags = Collections.emptyList();
 
     @JsonProperty
-    private Integer categoryId;
+    private Integer category;
 
     public String getExcerpt() {
         return excerpt;
@@ -45,11 +51,19 @@ public class PostCreateRequest extends WebpageDto {
         this.tags = tags;
     }
 
-    public Integer getCategoryId() {
-        return categoryId;
+    public Integer getCategory() {
+        return category;
     }
 
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(Integer category) {
+        this.category = category;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

@@ -4,14 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+import javax.validation.constraints.NotBlank;
+
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class WebpageDto {
 
     @JsonProperty
+    @NotBlank
     private String slug;
 
     @JsonProperty
-    private String title;
+    private Integer id;
 
     @JsonProperty
     private String description;
@@ -24,12 +27,12 @@ public class WebpageDto {
         this.slug = slug;
     }
 
-    public String getTitle() {
-        return title;
+    public Integer getId() {
+        return id;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getDescription() {

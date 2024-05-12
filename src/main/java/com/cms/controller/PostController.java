@@ -1,7 +1,9 @@
 package com.cms.controller;
 
+import com.cms.dto.DtoMapper;
 import com.cms.dto.PostCreateRequest;
 import com.cms.dto.PostDto;
+import com.cms.entity.Post;
 import com.cms.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,8 +30,9 @@ public class PostController {
     }
 
     @PostMapping("")
-    private void create(@RequestBody PostCreateRequest request) {
-        postService.createPost(request);
+    private PostDto create(@RequestBody PostCreateRequest request) {
+        Post post = postService.createPost(request);
+        return DtoMapper.POST_TO_DTO.apply(post);
     }
 
     @GetMapping("/{id}")
@@ -38,7 +41,8 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    private void updateById(@RequestBody PostCreateRequest request, @PathVariable("id") int id) {
+    private void updateById(@RequestBody PostCreateRequest request,
+                            @PathVariable("id") int id) {
         postService.updatePost(request, id);
     }
 

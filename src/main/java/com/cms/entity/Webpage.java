@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 
+import javax.validation.constraints.NotBlank;
+
 @MappedSuperclass
 public class Webpage {
 
@@ -14,10 +16,8 @@ public class Webpage {
     private Integer id;
 
     @Column(unique = true, nullable = false)
+    @NotBlank
     private String slug;
-
-    @Column(nullable = false)
-    private String title;
 
     @Column
     private String description;
@@ -28,14 +28,6 @@ public class Webpage {
 
     public void setSlug(String slug) {
         this.slug = slug;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getDescription() {

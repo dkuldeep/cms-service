@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -32,14 +33,16 @@ public class PostService {
     @Autowired
     private TagRepository tagRepository;
 
-    public void createPost(PostCreateRequest request) {
+    public Post createPost(PostCreateRequest request) {
         Post post = transform(request);
         post.setCreatedDate(LocalDateTime.now());
         List<Tag> tags = tagRepository.findAllById(request.getTags());
-        Optional<Category> category = categoryRepository.findById(request.getCategoryId());
-        post.setCategory(category.orElse(null));
+        if (Objects.nonNull(request.getCategory())) {
+            Optional<Category> category = categoryRepository.findById(request.getCategory());
+            post.setCategory(category.orElse(null));
+        }
         post.setTags(new HashSet<>(tags));
-        postRepository.save(post);
+        return postRepository.save(post);
     }
 
     public void updatePost(PostCreateRequest request, int id) {
@@ -77,8 +80,8 @@ public class PostService {
     private void transform(PostCreateRequest request, Post post) {
         post.setDescription(request.getDescription());
         post.setSlug(request.getSlug());
-        post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setExcerpt(request.getExcerpt());
+        post.setTitle(request.getTitle());
     }
 }

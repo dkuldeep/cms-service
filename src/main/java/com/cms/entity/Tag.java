@@ -9,17 +9,18 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table
 public class Tag extends Webpage {
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "tags")
-    private Set<Post> posts;
+    private Set<Post> posts = new HashSet<>(0);
 
     public String getName() {
         return name;
@@ -27,5 +28,13 @@ public class Tag extends Webpage {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(Set<Post> posts) {
+        this.posts = posts;
     }
 }

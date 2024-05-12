@@ -9,6 +9,7 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PostDto extends WebpageDto {
 
+    private String title;
     private String excerpt;
     private String content;
     private LocalDateTime created;
@@ -62,5 +63,13 @@ public class PostDto extends WebpageDto {
 
     public void setCategory(CategoryDto category) {
         this.category = category;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

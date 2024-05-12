@@ -10,12 +10,17 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Table
 public class Post extends Webpage {
+
+    @Column
+    @NotEmpty
+    private String title;
 
     @Column
     private String excerpt;
@@ -86,5 +91,13 @@ public class Post extends Webpage {
 
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
