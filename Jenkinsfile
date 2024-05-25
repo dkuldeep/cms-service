@@ -4,7 +4,7 @@ pipeline {
   stages {   
     stage('Build') {
       steps {
-        sh 'mvnw clean install -DskipTests'
+        sh '/home/jsonbeautify5533/apache-maven-3.9.6/bin/mvn clean install -DskipTests'
       }
     }
   }
