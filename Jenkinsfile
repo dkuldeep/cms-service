@@ -2,22 +2,10 @@ pipeline {
   agent any
 
   stages {   
-    stage('Install') {
-      steps {
-        sh 'npm install'
-      }
-    }
-    
     stage('Build') {
       steps {
-        sh 'npm run build'
+        sh 'mvn clean install -DskipTests'
       }
-    }
-
-    stage('Restart Service') {
-        steps {
-            sh 'systemctl restart jsonbeautify.service'
-        }
     }
   }
 }
