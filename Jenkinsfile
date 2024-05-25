@@ -14,7 +14,7 @@ pipeline {
     }
     stage('Restart Service') {
               steps {
-                sh 'systemctl restart cms-service.service'
+                sh 'systemctl --user restart cms-service.service'
           }
     }
   }
