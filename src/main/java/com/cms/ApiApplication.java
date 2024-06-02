@@ -22,7 +22,7 @@ public class ApiApplication {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
-                        .allowedOrigins("http://localhost:4000", "localhost:4001");
+                        .allowedOrigins("http://localhost:4000", "http://localhost:4001");
             }
         };
     }
