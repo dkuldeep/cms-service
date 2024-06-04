@@ -25,7 +25,8 @@ public class ApiApplication {
                         .allowedOrigins("http://localhost:4000",
                                 "http://localhost:4001",
                                 "https://localhost:4001",
-                                "https://admin.jsonbeautify.net");
+                                "https://admin.jsonbeautify.net",
+                                "http://212.38.94.177:4001");
             }
         };
     }
