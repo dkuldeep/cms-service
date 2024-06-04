@@ -26,7 +26,8 @@ public class ApiApplication {
                                 "http://localhost:4001",
                                 "https://localhost:4001",
                                 "https://admin.jsonbeautify.net",
-                                "http://212.38.94.177:4001");
+                                "http://212.38.94.177:4001",
+                                "https://212.38.94.177:4001");
             }
         };
     }
