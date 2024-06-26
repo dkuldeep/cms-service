@@ -1,6 +1,7 @@
 package com.cms.controller;
 
 import com.cms.dto.ImageDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,11 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/images")
 public class ImageController {
-    public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/uploads";
+
+    @Value("${server.host}")
+    private String host;
+
+    public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/images";
 
     @GetMapping(value = "/{filename}", produces = {MediaType.IMAGE_JPEG_VALUE})
     public ResponseEntity<byte[]> getImage(@PathVariable String filename) throws IOException {
@@ -44,7 +49,7 @@ public class ImageController {
         Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, file.getOriginalFilename());
         Files.write(fileNameAndPath, file.getBytes());
         ImageDto imageDto = new ImageDto();
-        imageDto.setLocation("http://localhost:8090/images" + "/" + file.getOriginalFilename());
+        imageDto.setLocation(host + "/images/" + file.getOriginalFilename());
         return imageDto;
     }
 }

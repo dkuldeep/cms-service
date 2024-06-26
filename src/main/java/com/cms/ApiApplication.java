@@ -21,7 +21,8 @@ public class ApiApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:4000",
+                        .allowedOrigins(
+                                "http://localhost:4000",
                                 "http://localhost:4001",
                                 "https://admin.jsonbeautify.net",
                                 "http://212.38.94.177:4001",
