@@ -4,6 +4,7 @@ import com.cms.dto.DtoMapper;
 import com.cms.dto.PostCreateRequest;
 import com.cms.dto.PostDto;
 import com.cms.entity.Post;
+import com.cms.exception.ObjectNotFoundException;
 import com.cms.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,9 +14,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/posts")
@@ -24,9 +29,19 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @GetMapping({""})
-    private List<PostDto> getAllPosts() {
-        return postService.getAllPosts();
+    @GetMapping
+    private List<PostDto> getAllPosts(@RequestParam(required = false) String slug) {
+        List<Post> posts;
+        if (Objects.nonNull(slug)) {
+            Post post = postService.getBySlug(slug);
+            if (Objects.isNull(post)) {
+                throw new ObjectNotFoundException();
+            }
+            posts = Collections.singletonList(post);
+        } else {
+            posts = postService.getAllPosts();
+        }
+        return posts.stream().map(DtoMapper.POST_TO_DTO).collect(Collectors.toList());
     }
 
     @PostMapping("")

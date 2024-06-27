@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -57,8 +56,8 @@ public class PostService {
         }
     }
 
-    public List<PostDto> getAllPosts() {
-        return postRepository.findAll().stream().map(DtoMapper.POST_TO_DTO).collect(Collectors.toList());
+    public List<Post> getAllPosts() {
+        return postRepository.findAll();
     }
 
     public PostDto getPostById(int id) {
@@ -69,6 +68,10 @@ public class PostService {
 
     public void deleteById(int id) {
         postRepository.deleteById(id);
+    }
+
+    public Post getBySlug(String postSlug) {
+        return postRepository.getBySlug(postSlug);
     }
 
     private Post transform(PostCreateRequest request) {
