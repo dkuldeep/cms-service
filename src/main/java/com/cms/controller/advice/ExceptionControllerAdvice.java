@@ -12,6 +12,6 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(value = ObjectNotFoundException.class)
     public ResponseEntity<Object> exception(ObjectNotFoundException exception) {
-        return new ResponseEntity<>(new ObjectNotFoundDto("Object not found"), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new ObjectNotFoundDto(exception.getMessage()), HttpStatus.NOT_FOUND);
     }
 }

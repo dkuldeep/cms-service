@@ -1,5 +1,6 @@
 package com.cms.controller;
 
+import com.cms.constant.ErrorMessage;
 import com.cms.dto.DtoMapper;
 import com.cms.dto.PostCreateRequest;
 import com.cms.dto.PostDto;
@@ -7,6 +8,7 @@ import com.cms.entity.Post;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -35,7 +39,7 @@ public class PostController {
         if (Objects.nonNull(slug)) {
             Post post = postService.getBySlug(slug);
             if (Objects.isNull(post)) {
-                throw new ObjectNotFoundException();
+                throw new ObjectNotFoundException(String.format(ErrorMessage.POST_BY_SLUG_NOT_FOUND, slug));
             }
             posts = Collections.singletonList(post);
         } else {
@@ -52,7 +56,9 @@ public class PostController {
 
     @GetMapping("/{id}")
     private PostDto findById(@PathVariable int id) {
-        return postService.getPostById(id);
+        Optional<Post> optionalPost = postService.getPostById(id);
+        return optionalPost.map(DtoMapper.POST_TO_DTO)
+                .orElseThrow(() -> new ObjectNotFoundException(String.format(ErrorMessage.POST_BY_ID_NOT_FOUND, id)));
     }
 
     @PutMapping("/{id}")
