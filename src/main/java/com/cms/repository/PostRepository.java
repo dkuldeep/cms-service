@@ -10,5 +10,5 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query("SELECT p from Post p WHERE p.slug = :slug")
-    public Post getBySlug(String slug);
+    Post getBySlug(String slug);
 }

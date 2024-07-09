@@ -2,21 +2,20 @@ package com.cms.service;
 
 import com.cms.constant.ErrorMessage;
 import com.cms.dto.PostCreateRequest;
-import com.cms.entity.Category;
 import com.cms.entity.Post;
-import com.cms.entity.Tag;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.repository.CategoryRepository;
 import com.cms.repository.PostRepository;
 import com.cms.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -31,24 +30,19 @@ public class PostService {
     private TagRepository tagRepository;
 
     public Post createPost(PostCreateRequest request) {
-        Post post = transform(request);
+        Post post = new Post();
+        transform(request, post);
         post.setCreatedDate(LocalDateTime.now());
-        List<Tag> tags = tagRepository.findAllById(request.getTags());
-        if (Objects.nonNull(request.getCategory())) {
-            Optional<Category> category = categoryRepository.findById(request.getCategory());
-            post.setCategory(category.orElse(null));
-        }
-        post.setTags(new HashSet<>(tags));
-        return postRepository.save(post);
+        return postRepository.saveAndFlush(post);
     }
 
+    @Transactional
     public void updatePost(PostCreateRequest request, int id) {
         Optional<Post> optional = postRepository.findById(id);
         if (optional.isPresent()) {
             Post existingPost = optional.get();
             transform(request, existingPost);
             existingPost.setUpdatedDate(LocalDateTime.now());
-            postRepository.saveAndFlush(existingPost);
         } else {
             throw new ObjectNotFoundException(String.format(ErrorMessage.POST_BY_ID_NOT_FOUND, id));
         }
@@ -70,17 +64,18 @@ public class PostService {
         return postRepository.getBySlug(postSlug);
     }
 
-    private Post transform(PostCreateRequest request) {
-        Post post = new Post();
-        transform(request, post);
-        return post;
-    }
-
     private void transform(PostCreateRequest request, Post post) {
-        post.setDescription(request.getDescription());
-        post.setSlug(request.getSlug());
-        post.setContent(request.getContent());
-        post.setExcerpt(request.getExcerpt());
         post.setTitle(request.getTitle());
+        post.setSlug(request.getSlug());
+        post.setExcerpt(request.getExcerpt());
+        post.setDescription(request.getDescription());
+        post.setCategory(Optional.ofNullable(request.getCategory())
+                .map(integer -> categoryRepository.getReferenceById(integer))
+                .orElse(null));
+        post.setTags(request.getTags().stream()
+                .filter(Objects::nonNull)
+                .map(integer -> tagRepository.getReferenceById(integer))
+                .collect(Collectors.toSet()));
+        post.setContent(request.getContent());
     }
 }

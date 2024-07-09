@@ -1,8 +1,10 @@
 package com.cms.controller;
 
+import com.cms.constant.ErrorMessage;
 import com.cms.dto.CategoryDto;
 import com.cms.dto.DtoMapper;
 import com.cms.entity.Category;
+import com.cms.exception.ObjectNotFoundException;
 import com.cms.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +48,8 @@ public class CategoryController {
             category.setName(categoryDto.getName());
             category.setSlug(categoryDto.getSlug());
             category.setDescription(categoryDto.getDescription());
+        } else {
+            throw new ObjectNotFoundException(String.format(ErrorMessage.CATEGORY_NOT_FOUND_WITH_ID, id));
         }
     }
 

@@ -3,12 +3,12 @@ package com.cms.controller;
 import com.cms.constant.ErrorMessage;
 import com.cms.dto.DtoMapper;
 import com.cms.dto.PostCreateRequest;
+import com.cms.dto.PostCreateResponse;
 import com.cms.dto.PostDto;
 import com.cms.entity.Post;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,12 +47,6 @@ public class PostController {
         return posts.stream().map(DtoMapper.POST_TO_DTO).collect(Collectors.toList());
     }
 
-    @PostMapping("")
-    private PostDto create(@RequestBody PostCreateRequest request) {
-        Post post = postService.createPost(request);
-        return DtoMapper.POST_TO_DTO.apply(post);
-    }
-
     @GetMapping("/{id}")
     private PostDto findById(@PathVariable int id) {
         Optional<Post> optionalPost = postService.getPostById(id);
@@ -61,10 +54,22 @@ public class PostController {
                 .orElseThrow(() -> new ObjectNotFoundException(String.format(ErrorMessage.POST_BY_ID_NOT_FOUND, id)));
     }
 
+    @PostMapping
+    private PostCreateResponse create(@RequestBody PostCreateRequest request) {
+        Post post = postService.createPost(request);
+        PostCreateResponse response = new PostCreateResponse();
+        response.setId(post.getId());
+        response.setMessage(ErrorMessage.POST_CREATED);
+        return response;
+    }
+
     @PutMapping("/{id}")
-    private void updateById(@RequestBody PostCreateRequest request,
+    private PostCreateResponse updateById(@RequestBody PostCreateRequest request,
                             @PathVariable("id") int id) {
         postService.updatePost(request, id);
+        PostCreateResponse response = new PostCreateResponse();
+        response.setMessage(ErrorMessage.POST_UPDATED);
+        return response;
     }
 
     @DeleteMapping("/{id}")
