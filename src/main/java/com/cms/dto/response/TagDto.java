@@ -1,31 +1,20 @@
-package com.cms.dto;
+package com.cms.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.cms.dto.WebpageDto;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import javax.validation.constraints.NotBlank;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CategoryDto extends WebpageDto {
+public class TagDto extends WebpageDto {
 
-    @JsonProperty
     @NotBlank
     private String name;
 
-    @JsonProperty
-    private Integer count;
-
-    @JsonProperty
     private Integer id;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    private Integer count;
 
     public String getName() {
         return name;
@@ -41,5 +30,13 @@ public class CategoryDto extends WebpageDto {
 
     public void setCount(Integer count) {
         this.count = count;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

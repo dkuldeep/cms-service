@@ -1,5 +1,6 @@
-package com.cms.dto;
+package com.cms.dto.request;
 
+import com.cms.dto.WebpageDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -13,7 +14,7 @@ public class PostCreateRequest extends WebpageDto {
 
     @JsonProperty
     @NotBlank
-    private String title;
+    private String heading;
 
     @JsonProperty
     private String excerpt;
@@ -59,11 +60,11 @@ public class PostCreateRequest extends WebpageDto {
         this.category = category;
     }
 
-    public String getTitle() {
-        return title;
+    public String getHeading() {
+        return heading;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setHeading(String heading) {
+        this.heading = heading;
     }
 }

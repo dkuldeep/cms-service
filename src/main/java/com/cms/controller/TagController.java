@@ -2,7 +2,10 @@ package com.cms.controller;
 
 import com.cms.constant.ErrorMessage;
 import com.cms.dto.DtoMapper;
-import com.cms.dto.TagDto;
+import com.cms.dto.response.TagDto;
+import com.cms.dto.request.TagCreateRequest;
+import com.cms.dto.response.ObjectCreated;
+import com.cms.dto.response.ObjectUpdated;
 import com.cms.entity.Tag;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.repository.TagRepository;
@@ -27,20 +30,21 @@ public class TagController {
     }
 
     @PostMapping
-    public TagDto addTag(@RequestBody TagDto tagDto) {
-        Tag tag = tagRepository.saveAndFlush(DtoMapper.DTO_TO_TAG.apply(tagDto));
-        return DtoMapper.TAG_TO_DTO.apply(tag);
+    public ObjectCreated addTag(@RequestBody TagCreateRequest request) {
+        Tag tag = new Tag();
+        DtoMapper.mapRequestToTag(request, tag);
+        tag = tagRepository.saveAndFlush(tag);
+        return new ObjectCreated(tag.getId(), ErrorMessage.TAG_CREATED);
     }
 
     @Transactional
     @PutMapping("/{id}")
-    public void updateTag(@PathVariable Integer id, @RequestBody TagDto tagDto) {
+    public ObjectUpdated updateTag(@PathVariable Integer id, @RequestBody TagCreateRequest request) {
         Optional<Tag> optionalTag = tagRepository.findById(id);
         if (optionalTag.isPresent()) {
             Tag existingTag = optionalTag.get();
-            existingTag.setName(tagDto.getName());
-            existingTag.setDescription(tagDto.getDescription());
-            existingTag.setSlug(tagDto.getSlug());
+            DtoMapper.mapRequestToTag(request, existingTag);
+            return new ObjectUpdated(ErrorMessage.TAG_UPDATED);
         } else {
             throw new ObjectNotFoundException(String.format(ErrorMessage.TAG_NOT_FOUND_WITH_ID, id));
         }

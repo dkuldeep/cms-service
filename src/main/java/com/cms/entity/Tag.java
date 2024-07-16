@@ -2,13 +2,9 @@ package com.cms.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,6 +17,9 @@ public class Tag extends Webpage {
 
     @ManyToMany(mappedBy = "tags")
     private Set<Post> posts = new HashSet<>(0);
+
+    @ManyToMany(mappedBy = "tags")
+    private Set<Tool> tools = new HashSet<>(0);
 
     public String getName() {
         return name;
@@ -36,5 +35,13 @@ public class Tag extends Webpage {
 
     public void setPosts(Set<Post> posts) {
         this.posts = posts;
+    }
+
+    public Set<Tool> getTools() {
+        return tools;
+    }
+
+    public void setTools(Set<Tool> tools) {
+        this.tools = tools;
     }
 }

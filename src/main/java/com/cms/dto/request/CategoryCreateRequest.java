@@ -1,31 +1,24 @@
-package com.cms.dto;
+package com.cms.dto.request;
 
+import com.cms.dto.WebpageDto;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import javax.validation.constraints.NotBlank;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class TagDto extends WebpageDto {
+public class CategoryCreateRequest extends WebpageDto {
 
+    @JsonProperty
     @NotBlank
     private String name;
 
-    private Integer count;
-
-    public String getName() {
+    public @NotBlank String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NotBlank String name) {
         this.name = name;
-    }
-
-    public Integer getCount() {
-        return count;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
     }
 }

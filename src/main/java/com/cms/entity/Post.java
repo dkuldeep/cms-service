@@ -12,6 +12,7 @@ import jakarta.persistence.TemporalType;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -20,7 +21,7 @@ public class Post extends Webpage {
 
     @Column
     @NotEmpty
-    private String title;
+    private String heading;
 
     @Column
     private String excerpt;
@@ -40,10 +41,10 @@ public class Post extends Webpage {
     private Category category;
 
     @ManyToMany
-    @JoinTable(name = "PostsTags",
+    @JoinTable(
             joinColumns = {@JoinColumn(name = "post_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>(0);
 
     public String getExcerpt() {
         return excerpt;
@@ -93,11 +94,11 @@ public class Post extends Webpage {
         this.tags = tags;
     }
 
-    public String getTitle() {
-        return title;
+    public String getHeading() {
+        return heading;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setHeading(String heading) {
+        this.heading = heading;
     }
 }

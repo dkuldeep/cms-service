@@ -20,6 +20,9 @@ public class Webpage {
     private String slug;
 
     @Column
+    private String title;
+
+    @Column
     private String description;
 
     public String getSlug() {
@@ -44,5 +47,13 @@ public class Webpage {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

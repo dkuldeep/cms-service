@@ -3,6 +3,9 @@ package com.cms.controller;
 import com.cms.constant.ErrorMessage;
 import com.cms.dto.CategoryDto;
 import com.cms.dto.DtoMapper;
+import com.cms.dto.request.CategoryCreateRequest;
+import com.cms.dto.response.ObjectCreated;
+import com.cms.dto.response.ObjectUpdated;
 import com.cms.entity.Category;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.repository.CategoryRepository;
@@ -34,20 +37,21 @@ public class CategoryController {
     }
 
     @PostMapping
-    public CategoryDto addCategory(@RequestBody CategoryDto categoryDto) {
-        Category category = categoryRepository.saveAndFlush(DtoMapper.DTO_TO_CATEGORY.apply(categoryDto));
-        return DtoMapper.CATEGORY_TO_DTO.apply(category);
+    public ObjectCreated addCategory(@RequestBody CategoryCreateRequest request) {
+        Category category = new Category();
+        DtoMapper.mapRequestToCategory(request, category);
+        category = categoryRepository.saveAndFlush(category);
+        return new ObjectCreated(category.getId(), ErrorMessage.CATEGORY_CREATED);
     }
 
     @Transactional
     @PutMapping("/{id}")
-    public void updateCategory(@PathVariable Integer id, @RequestBody CategoryDto categoryDto) {
+    public ObjectUpdated updateCategory(@PathVariable Integer id, @RequestBody CategoryCreateRequest request) {
         Optional<Category> optional = categoryRepository.findById(id);
         if (optional.isPresent()) {
             Category category = optional.get();
-            category.setName(categoryDto.getName());
-            category.setSlug(categoryDto.getSlug());
-            category.setDescription(categoryDto.getDescription());
+            DtoMapper.mapRequestToCategory(request, category);
+            return new ObjectUpdated(ErrorMessage.CATEGORY_UPDATED);
         } else {
             throw new ObjectNotFoundException(String.format(ErrorMessage.CATEGORY_NOT_FOUND_WITH_ID, id));
         }

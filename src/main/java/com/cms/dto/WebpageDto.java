@@ -14,7 +14,7 @@ public class WebpageDto {
     private String slug;
 
     @JsonProperty
-    private Integer id;
+    private String title;
 
     @JsonProperty
     private String description;
@@ -27,19 +27,19 @@ public class WebpageDto {
         this.slug = slug;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
