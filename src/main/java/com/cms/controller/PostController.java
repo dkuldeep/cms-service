@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.cms.constant.ErrorMessage.POST_CREATED;
@@ -39,42 +40,66 @@ public class PostController {
     private PostService postService;
 
     @GetMapping
-    private List<PostResponseDto> getAllPosts(@RequestParam(required = false) String slug) {
+    public List<PostResponseDto> getAllPosts(@RequestParam(required = false) String slug,
+                                             @RequestParam(required = false) Integer category) {
         List<Post> posts;
-        if (Objects.nonNull(slug)) {
-            Post post = postService.getBySlug(slug);
-            if (Objects.isNull(post)) {
-                throw new ObjectNotFoundException(String.format(ErrorMessage.POST_NOT_FOUND_WITH_SLUG, slug));
-            }
-            posts = Collections.singletonList(post);
+        if (Objects.nonNull(category) && Objects.nonNull(slug)) {
+            Set<Post> set = postService.getPostsByCategory(category);
+            posts = set.stream().filter(post -> post.getSlug().equals(slug)).collect(Collectors.toList());
+            return posts.stream().map(DtoMapper.POST_TO_DTO).collect(Collectors.toList());
         } else {
+            if (Objects.nonNull(category)) {
+                posts = postService.getPostsByCategory(category).stream().toList();
+                return posts.stream().map(DtoMapper.POST_TO_DTO).collect(Collectors.toList());
+            }
+            if (Objects.nonNull(slug)) {
+                Post post = postService.getBySlug(slug);
+                if (Objects.isNull(post)) {
+                    throw new ObjectNotFoundException(String.format(ErrorMessage.POST_NOT_FOUND_WITH_SLUG, slug));
+                }
+                posts = Collections.singletonList(post);
+                return posts.stream().map(DtoMapper.POST_TO_DTO).collect(Collectors.toList());
+            }
             posts = postService.getAllPosts();
+            return posts.stream().map(DtoMapper.POST_TO_DTO).collect(Collectors.toList());
         }
-        return posts.stream().map(DtoMapper.POST_TO_DTO).collect(Collectors.toList());
+    }
+
+    @GetMapping("/byCategoryAndSlug")
+    public PostResponseDto getPostByCategoryAndSlug(@RequestParam(required = false) String slug,
+                                                    @RequestParam(required = false) String category) {
+        Post post = postService.getPostByCategoryAndSlug(category, slug);
+        return DtoMapper.POST_TO_DTO.apply(post);
+    }
+
+    @GetMapping("latest5")
+    public List<PostResponseDto> latest5() {
+        List<Post> posts = postService.latest5();
+        return posts.stream().map(DtoMapper.POST_TO_DTO).toList();
     }
 
     @GetMapping("/{id}")
-    private PostResponseDto findById(@PathVariable int id) {
+    public PostResponseDto findById(@PathVariable int id) {
         Optional<Post> optionalPost = postService.getPostById(id);
         return optionalPost.map(DtoMapper.POST_TO_DTO)
                 .orElseThrow(() -> new ObjectNotFoundException(String.format(ErrorMessage.POST_BY_ID_NOT_FOUND, id)));
     }
 
     @PostMapping
-    private ObjectCreated create(@RequestBody PostCreateRequest request) {
+    public ObjectCreated create(@RequestBody PostCreateRequest request) {
         Post post = postService.createPost(request);
         return new ObjectCreated(post.getId(), POST_CREATED);
     }
 
     @PutMapping("/{id}")
-    private ObjectUpdated updateById(@RequestBody PostCreateRequest request,
+    public ObjectUpdated updateById(@RequestBody PostCreateRequest request,
                                      @PathVariable("id") int id) {
         postService.updatePost(request, id);
         return new ObjectUpdated(ErrorMessage.POST_UPDATED);
     }
 
     @DeleteMapping("/{id}")
-    private void deleteById(@PathVariable("id") int id) {
+    public void deleteById(@PathVariable("id") int id) {
         postService.deleteById(id);
     }
 

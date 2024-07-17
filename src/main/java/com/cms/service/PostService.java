@@ -5,6 +5,7 @@ import com.cms.business.WordpressPostImpl;
 import com.cms.constant.ErrorMessage;
 import com.cms.dto.request.PostCreateRequest;
 import com.cms.dto.wordpress.WordpressPost;
+import com.cms.entity.Category;
 import com.cms.entity.Post;
 import com.cms.exception.ObjectAlreadyExistException;
 import com.cms.exception.ObjectNotFoundException;
@@ -15,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -128,5 +132,32 @@ public class PostService {
             }
         }
         return null;
+    }
+
+    public Set<Post> getPostsByCategory(Integer categoryId) {
+        Optional<Category> optional = categoryRepository.findById(categoryId);
+        if (optional.isPresent()) {
+            Category category = optional.get();
+            return category.getPosts();
+        }
+        return new HashSet<>(0);
+    }
+
+    public Post getPostByCategoryAndSlug(String category, String slug) {
+        Category search = new Category();
+        search.setSlug(category);
+        Optional<Category> optional = categoryRepository.findOne(Example.of(search));
+        if (optional.isPresent()) {
+            Category category1 = optional.get();
+            Optional<Post> optionalPost = category1.getPosts().stream().filter(post -> post.getSlug().equals(slug)).findFirst();
+            return optionalPost.orElseThrow();
+        } else {
+            throw new ObjectNotFoundException(String.format(ErrorMessage.POST_NOT_FOUND_WITH_SLUG, slug));
+        }
+    }
+
+    public List<Post> latest5() {
+        Page<Post> page = postRepository.findAll(Pageable.ofSize(5));
+        return page.get().toList();
     }
 }
