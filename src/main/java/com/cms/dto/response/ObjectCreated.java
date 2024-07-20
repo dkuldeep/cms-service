@@ -8,6 +8,10 @@ public class ObjectCreated extends ObjectUpdated {
         this.id = id;
     }
 
+    public ObjectCreated(String message) {
+        super(message);
+    }
+
     public Integer getId() {
         return id;
     }

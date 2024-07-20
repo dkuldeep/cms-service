@@ -1,6 +1,5 @@
 package com.cms.business;
 
-import com.cms.constant.ToolType;
 import com.cms.dto.wordpress.WordpressPost;
 import com.cms.entity.Tag;
 import com.cms.repository.TagRepository;
@@ -9,12 +8,12 @@ import com.cms.service.ImageService;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class WordpressToolImpl implements ToolRef {
+public class WordpressBlogImpl implements BlogRef {
 
     private final WordpressPost wordpressPost;
     private final CommonFieldsRef commonFieldsRef;
 
-    public WordpressToolImpl(WordpressPost wordpressPost,
+    public WordpressBlogImpl(WordpressPost wordpressPost,
                              ImageService imageService,
                              TagRepository tagRepository) {
         this.wordpressPost = wordpressPost;
@@ -22,23 +21,13 @@ public class WordpressToolImpl implements ToolRef {
     }
 
     @Override
-    public String getName() {
-        return wordpressPost.getSlug().replaceAll("-", " ");
-    }
-
-    @Override
-    public String getTitle() {
+    public String getHeading() {
         return wordpressPost.getTitle().getRendered();
     }
 
     @Override
-    public String getType() {
-        return ToolType.UNCATEGORIZED.name();
-    }
-
-    @Override
-    public String getTagline() {
-        return "";
+    public String getExcerpt() {
+        return commonFieldsRef.getDescription();
     }
 
     @Override

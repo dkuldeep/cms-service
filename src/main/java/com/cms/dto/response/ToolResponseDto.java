@@ -1,30 +1,20 @@
 package com.cms.dto.response;
 
+import com.cms.dto.AbstractCategoryResponse;
 import com.cms.dto.ToolTypeDto;
-import com.cms.dto.WebpageDto;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+import java.util.Collections;
 import java.util.List;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ToolResponseDto extends WebpageDto {
+public class ToolResponseDto extends AbstractCategoryResponse {
 
-    private Integer id;
-    private String name;
     private ToolTypeDto type;
     private String content;
-    private String excerpt;
-    private List<TagDto> tags;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private String tagline;
+    private List<TagDto> tags = Collections.emptyList();
 
     public ToolTypeDto getType() {
         return type;
@@ -42,20 +32,12 @@ public class ToolResponseDto extends WebpageDto {
         this.content = content;
     }
 
-    public Integer getId() {
-        return id;
+    public String getTagline() {
+        return tagline;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getExcerpt() {
-        return excerpt;
-    }
-
-    public void setExcerpt(String excerpt) {
-        this.excerpt = excerpt;
+    public void setTagline(String tagline) {
+        this.tagline = tagline;
     }
 
     public List<TagDto> getTags() {

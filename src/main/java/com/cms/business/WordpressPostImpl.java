@@ -15,30 +15,23 @@ import java.util.Optional;
 import static com.cms.constant.CommonConstants.WORDPRESS_IMPORT_DEFAULT_CATEGORY;
 
 public class WordpressPostImpl implements PostRef {
+
     private final WordpressPost wordpressPost;
     private final CommonFieldsRef commonFieldsRef;
     private final CategoryRepository categoryRepository;
 
-    public WordpressPostImpl(WordpressPost wordpressPost, ImageService imageService, TagRepository tagRepository, CategoryRepository categoryRepository) {
+    public WordpressPostImpl(WordpressPost wordpressPost,
+                             ImageService imageService,
+                             TagRepository tagRepository,
+                             CategoryRepository categoryRepository) {
         this.wordpressPost = wordpressPost;
         this.categoryRepository = categoryRepository;
         this.commonFieldsRef = new CommonFieldsImpl(wordpressPost, imageService, tagRepository);
     }
 
-
     @Override
     public String getHeading() {
-        return commonFieldsRef.getTitle();
-    }
-
-    @Override
-    public LocalDateTime getCreatedDate() {
-        return wordpressPost.getDate();
-    }
-
-    @Override
-    public LocalDateTime getUpdatedDate() {
-        return wordpressPost.getModified();
+        return wordpressPost.getTitle().getRendered();
     }
 
     @Override
@@ -50,13 +43,13 @@ public class WordpressPostImpl implements PostRef {
     }
 
     @Override
-    public String getSlug() {
-        return commonFieldsRef.getSlug();
+    public String getExcerpt() {
+        return getDescription();
     }
 
     @Override
-    public String getTitle() {
-        return commonFieldsRef.getTitle();
+    public String getSlug() {
+        return commonFieldsRef.getSlug();
     }
 
     @Override
@@ -65,13 +58,18 @@ public class WordpressPostImpl implements PostRef {
     }
 
     @Override
-    public String getContent() {
-        return commonFieldsRef.getContent();
+    public LocalDateTime getCreated() {
+        return commonFieldsRef.getCreated();
     }
 
     @Override
-    public String getExcerpt() {
-        return commonFieldsRef.getExcerpt();
+    public LocalDateTime getUpdated() {
+        return commonFieldsRef.getUpdated();
+    }
+
+    @Override
+    public String getContent() {
+        return commonFieldsRef.getContent();
     }
 
     @Override

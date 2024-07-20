@@ -11,6 +11,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.data.domain.Example;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CommonFieldsImpl implements CommonFieldsRef {
@@ -30,13 +31,21 @@ public class CommonFieldsImpl implements CommonFieldsRef {
     }
 
     @Override
-    public String getTitle() {
-        return wordpressPost.getTitle().getRendered();
+    public String getDescription() {
+        String html = wordpressPost.getExcerpt().getRendered();
+        Document document = Jsoup.parse(html);
+        Elements elements = document.getElementsByTag("p");
+        return !elements.isEmpty() ? elements.get(0).text() : html;
     }
 
     @Override
-    public String getDescription() {
-        return getExcerpt();
+    public LocalDateTime getCreated() {
+        return wordpressPost.getDate();
+    }
+
+    @Override
+    public LocalDateTime getUpdated() {
+        return wordpressPost.getModified();
     }
 
     @Override
@@ -71,14 +80,6 @@ public class CommonFieldsImpl implements CommonFieldsRef {
         });
 
         return document.body().html();
-    }
-
-    @Override
-    public String getExcerpt() {
-        String html = wordpressPost.getExcerpt().getRendered();
-        Document document = Jsoup.parse(html);
-        Elements elements = document.getElementsByTag("p");
-        return !elements.isEmpty() ? elements.get(0).text() : html;
     }
 
     @Override

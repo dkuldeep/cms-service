@@ -20,19 +20,21 @@ import org.springframework.web.bind.annotation.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("tools")
-public class ToolController {
+public class ToolController implements WordpressImport {
 
     @Autowired
     private ToolService toolService;
 
     @Autowired
     private ImageService imageService;
-
 
     @GetMapping
     public List<ToolResponseDto> getAllTools(@RequestParam(required = false) String slug) {
@@ -72,10 +74,11 @@ public class ToolController {
                 .collect(Collectors.toList());
     }
 
+    @Override
     @PostMapping("wordpress")
     public ObjectCreated importFromWordpress(@RequestBody WordpressImportRequest request) throws MalformedURLException, URISyntaxException {
-        toolService.importFromWordpress(request.getType(), request.getValue());
-        return new ObjectCreated(-1, "Tools Created.");
+        int count = toolService.importFromWordpress(request.getType(), request.getValue());
+        return new ObjectCreated(count + " " + "Tools Created.");
     }
 
     @DeleteMapping("/{id}")

@@ -5,25 +5,33 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 
 @MappedSuperclass
 public class Webpage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer id;
+    protected Integer id;
 
     @Column(unique = true, nullable = false)
     @NotBlank
-    private String slug;
+    protected String slug;
 
     @Column
-    private String title;
+    protected String description;
+
+    @Column(updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    protected LocalDateTime created;
 
     @Column
-    private String description;
+    @Temporal(TemporalType.TIMESTAMP)
+    protected LocalDateTime updated;
 
     public String getSlug() {
         return slug;
@@ -49,11 +57,20 @@ public class Webpage {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public LocalDateTime getCreated() {
+        return created;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
     }
+
+    public LocalDateTime getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(LocalDateTime updated) {
+        this.updated = updated;
+    }
+
 }

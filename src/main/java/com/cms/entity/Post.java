@@ -26,17 +26,6 @@ public class Post extends Webpage {
     @Column
     private String excerpt;
 
-    @Column(length = Integer.MAX_VALUE)
-    private String content;
-
-    @Column(updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime createdDate;
-
-    @Column
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime updatedDate;
-
     @ManyToOne
     private Category category;
 
@@ -45,6 +34,9 @@ public class Post extends Webpage {
             joinColumns = {@JoinColumn(name = "post_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<Tag> tags = new HashSet<>(0);
+
+    @Column(length = Integer.MAX_VALUE)
+    private String content;
 
     public String getExcerpt() {
         return excerpt;
@@ -60,22 +52,6 @@ public class Post extends Webpage {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public LocalDateTime getUpdatedDate() {
-        return updatedDate;
-    }
-
-    public void setUpdatedDate(LocalDateTime updatedDate) {
-        this.updatedDate = updatedDate;
     }
 
     public Category getCategory() {

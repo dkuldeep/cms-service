@@ -3,10 +3,8 @@ package com.cms.service;
 import com.cms.business.ToolRef;
 import com.cms.business.WordpressToolImpl;
 import com.cms.constant.ErrorMessage;
-import com.cms.dto.DtoMapper;
 import com.cms.dto.request.ToolCreateRequest;
 import com.cms.dto.wordpress.WordpressPost;
-import com.cms.entity.Tag;
 import com.cms.entity.Tool;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.repository.TagRepository;
@@ -20,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -46,8 +46,9 @@ public class ToolService {
         return toolRepository.findAll();
     }
 
-    public void importFromWordpress(String type, String value) throws MalformedURLException, URISyntaxException {
+    public int importFromWordpress(String type, String value) throws MalformedURLException, URISyntaxException {
         List<WordpressPost> wordpressPosts = wordpressService.fetchPosts(value, type);
+        List<Tool> tools = new ArrayList<>(0);
         for (WordpressPost wordpressPost : wordpressPosts) {
             Tool search = new Tool();
             search.setSlug(wordpressPost.getSlug());
@@ -55,14 +56,16 @@ public class ToolService {
             if (toolRepository.exists(toolExample)) {
                 log.warn("Tool with slug '{}' already exists, ignoring it.", wordpressPost.getSlug());
             } else {
-                addNewTool(new WordpressToolImpl(wordpressPost, imageService, tagRepository));
+                tools.add(addNewTool(new WordpressToolImpl(wordpressPost, imageService, tagRepository)));
             }
         }
+        toolRepository.saveAllAndFlush(tools);
+        return tools.size();
     }
 
-    public void addNewTool(ToolRef toolRef) {
+    public Tool addNewTool(ToolRef toolRef) {
         Tool tool = new Tool();
-        tool.setExcerpt(tool.getExcerpt());
+        tool.setTagline(tool.getTagline());
         tool.setName(toolRef.getName());
         tool.setType(toolRef.getType());
         tool.setContent(toolRef.getContent());
@@ -70,11 +73,12 @@ public class ToolService {
         tool.setSlug(toolRef.getSlug());
         tool.setDescription(toolRef.getDescription());
         tool.setTags(new HashSet<>(toolRef.getTags()));
-        toolRepository.saveAndFlush(tool);
+        return tool;
     }
 
     public Tool addNewTool(ToolCreateRequest request) {
         Tool tool = new Tool();
+        tool.setCreated(LocalDateTime.now());
         mapRequestToTool(request, tool);
         return toolRepository.saveAndFlush(tool);
     }
@@ -83,6 +87,7 @@ public class ToolService {
         Optional<Tool> optional = toolRepository.findById(id);
         if (optional.isPresent()) {
             Tool tool = optional.get();
+            tool.setUpdated(LocalDateTime.now());
             mapRequestToTool(request, tool);
         } else {
             throw new ObjectNotFoundException(MessageFormat.format(ErrorMessage.TOOL_NOT_FOUND_WITH_ID, id));
@@ -103,15 +108,17 @@ public class ToolService {
         return toolRepository.findAll(Example.of(search));
     }
 
-    public void mapRequestToTool(ToolCreateRequest request, Tool tool) {
+    private void mapRequestToTool(ToolCreateRequest request, Tool tool) {
         tool.setName(request.getName());
         tool.setType(request.getType());
         tool.setContent(request.getContent());
-        tool.setExcerpt(request.getExcerpt());
+        tool.setTagline(request.getTagline());
         tool.setTags(request.getTags().stream()
                 .filter(Objects::nonNull)
                 .map(integer -> tagRepository.getReferenceById(integer))
                 .collect(Collectors.toSet()));
-        DtoMapper.mapDtoToWebpage(request, tool);
+        tool.setDescription(request.getDescription());
+        tool.setSlug(request.getSlug());
+        tool.setTitle(request.getTitle());
     }
 }

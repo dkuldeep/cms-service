@@ -34,7 +34,7 @@ import static com.cms.constant.ErrorMessage.POST_CREATED;
 
 @RestController
 @RequestMapping("/posts")
-public class PostController {
+public class PostController implements WordpressImport {
 
     @Autowired
     private PostService postService;
@@ -93,7 +93,7 @@ public class PostController {
 
     @PutMapping("/{id}")
     public ObjectUpdated updateById(@RequestBody PostCreateRequest request,
-                                     @PathVariable("id") int id) {
+                                    @PathVariable("id") int id) {
         postService.updatePost(request, id);
         return new ObjectUpdated(ErrorMessage.POST_UPDATED);
     }
@@ -103,9 +103,10 @@ public class PostController {
         postService.deleteById(id);
     }
 
+    @Override
     @PostMapping("wordpress")
     public ObjectCreated importFromWordpress(@RequestBody WordpressImportRequest request) throws MalformedURLException, URISyntaxException {
-        Post post = postService.importFromWordpress(request.getType(), request.getValue());
-        return new ObjectCreated(post.getId(), POST_CREATED);
+        int count = postService.importFromWordpress(request.getType(), request.getValue());
+        return new ObjectCreated(count + " " + POST_CREATED);
     }
 }

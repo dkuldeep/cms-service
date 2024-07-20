@@ -2,18 +2,19 @@ package com.cms.business;
 
 import com.cms.entity.Tag;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CommonFieldsRef {
     String getSlug();
 
-    String getTitle();
-
     String getDescription();
 
-    String getContent();
+    LocalDateTime getCreated();
 
-    String getExcerpt();
+    LocalDateTime getUpdated();
+
+    String getContent();
 
     List<Tag> getTags();
 }

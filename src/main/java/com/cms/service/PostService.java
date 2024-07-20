@@ -7,7 +7,6 @@ import com.cms.dto.request.PostCreateRequest;
 import com.cms.dto.wordpress.WordpressPost;
 import com.cms.entity.Category;
 import com.cms.entity.Post;
-import com.cms.exception.ObjectAlreadyExistException;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.repository.CategoryRepository;
 import com.cms.repository.PostRepository;
@@ -25,6 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -53,8 +53,8 @@ public class PostService {
 
     public Post createPost(PostCreateRequest request) {
         Post post = new Post();
+        post.setCreated(LocalDateTime.now());
         mapRequestToPost(request, post);
-        post.setCreatedDate(LocalDateTime.now());
         return postRepository.saveAndFlush(post);
     }
 
@@ -63,14 +63,13 @@ public class PostService {
         post.setHeading(postRef.getHeading());
         post.setTags(new HashSet<>(postRef.getTags()));
         post.setCategory(postRef.getCategory());
-        post.setCreatedDate(postRef.getCreatedDate());
-        post.setUpdatedDate(postRef.getUpdatedDate());
+        post.setCreated(postRef.getCreated());
+        post.setUpdated(postRef.getUpdated());
         post.setContent(postRef.getContent());
         post.setExcerpt(postRef.getExcerpt());
         post.setDescription(postRef.getDescription());
-        post.setTitle(postRef.getTitle());
         post.setSlug(postRef.getSlug());
-        return postRepository.saveAndFlush(post);
+        return post;
     }
 
     @Transactional
@@ -79,7 +78,7 @@ public class PostService {
         if (optional.isPresent()) {
             Post existingPost = optional.get();
             mapRequestToPost(request, existingPost);
-            existingPost.setUpdatedDate(LocalDateTime.now());
+            existingPost.setUpdated(LocalDateTime.now());
         } else {
             throw new ObjectNotFoundException(String.format(ErrorMessage.POST_BY_ID_NOT_FOUND, id));
         }
@@ -112,26 +111,24 @@ public class PostService {
                 .filter(Objects::nonNull)
                 .map(integer -> tagRepository.getReferenceById(integer))
                 .collect(Collectors.toSet()));
-        //
-        post.setTitle(request.getTitle());
         post.setSlug(request.getSlug());
         post.setDescription(request.getDescription());
     }
 
-    public Post importFromWordpress(String type, String value) throws MalformedURLException, URISyntaxException {
+    public int importFromWordpress(String type, String value) throws MalformedURLException, URISyntaxException {
         List<WordpressPost> wordpressPosts = wordpressService.fetchPosts(value, type);
+        List<Post> posts = new ArrayList<>(wordpressPosts.size());
         for (WordpressPost wordpressPost : wordpressPosts) {
             Post search = new Post();
             search.setSlug(wordpressPost.getSlug());
             if (postRepository.exists(Example.of(search))) {
-                String msg = MessageFormat.format(ErrorMessage.OBJECT_ALREADY_EXIST_WITH_SLUG, "Post", wordpressPost.getSlug());
-                log.warn(msg);
-                throw new ObjectAlreadyExistException(msg);
+                log.warn(MessageFormat.format(ErrorMessage.OBJECT_ALREADY_EXIST_WITH_SLUG, "Post", wordpressPost.getSlug()));
             } else {
-                return createPost(new WordpressPostImpl(wordpressPost, imageService, tagRepository, categoryRepository));
+                posts.add(createPost(new WordpressPostImpl(wordpressPost, imageService, tagRepository, categoryRepository)));
             }
         }
-        return null;
+        posts = postRepository.saveAllAndFlush(posts);
+        return posts.size();
     }
 
     public Set<Post> getPostsByCategory(Integer categoryId) {

@@ -1,6 +1,6 @@
 package com.cms.service;
 
-import com.cms.dto.CategoryDto;
+import com.cms.dto.response.CategoryDto;
 import com.cms.dto.DtoMapper;
 import com.cms.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;

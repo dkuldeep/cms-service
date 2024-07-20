@@ -6,7 +6,7 @@ public enum ToolType {
     FORMATTER("Formatter/Validators"),
     ENCODER("Encoder/Decoder"),
     STRING("String Tools"),
-    UNCATEGORIZED("Miscellaneous");
+    UNCATEGORIZED("Uncategorized");
 
     private final String label;
 

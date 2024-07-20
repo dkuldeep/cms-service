@@ -7,48 +7,46 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table
-public class Tool extends Webpage {
-
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
+public class Blog extends Webpage {
+    @Column
+    @NotEmpty
+    private String heading;
 
     @Column
-    private String title;
-
-    @Column
-    private String type;
+    private String excerpt;
 
     @Column(length = Integer.MAX_VALUE)
     private String content;
 
-    @Column
-    private String tagline;
-
     @ManyToMany
     @JoinTable(
-            joinColumns = {@JoinColumn(name = "tool_id")},
+            joinColumns = {@JoinColumn(name = "blog_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<Tag> tags = new HashSet<>(0);
 
-    public String getName() {
-        return name;
+    @Column
+    private String image;
+
+    public @NotEmpty String getHeading() {
+        return heading;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setHeading(@NotEmpty String heading) {
+        this.heading = heading;
     }
 
-    public String getType() {
-        return type;
+    public String getExcerpt() {
+        return excerpt;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setExcerpt(String excerpt) {
+        this.excerpt = excerpt;
     }
 
     public String getContent() {
@@ -59,14 +57,6 @@ public class Tool extends Webpage {
         this.content = content;
     }
 
-    public String getTagline() {
-        return tagline;
-    }
-
-    public void setTagline(String tagline) {
-        this.tagline = tagline;
-    }
-
     public Set<Tag> getTags() {
         return tags;
     }
@@ -75,11 +65,11 @@ public class Tool extends Webpage {
         this.tags = tags;
     }
 
-    public String getTitle() {
-        return title;
+    public String getImage() {
+        return image;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setImage(String image) {
+        this.image = image;
     }
 }

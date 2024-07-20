@@ -21,7 +21,7 @@ public class ErrorMessage {
     public static final String TOOL_UPDATED = "Tool Updated";
     public static final String TOOL_NOT_FOUND_WITH_ID = "Tool not found with id {0}";
 
-    public static final String OBJECT_ALREADY_EXIST_WITH_SLUG = "{0} already exists with slug '{1}'";
+    public static final String OBJECT_ALREADY_EXIST_WITH_SLUG = "{0} already exists with slug {1}";
 
     public static void main(String[] args) {
         System.out.println(MessageFormat.format(TOOL_NOT_FOUND_WITH_ID, 5));

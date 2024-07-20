@@ -1,22 +1,10 @@
 package com.cms.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
-
-import javax.validation.constraints.NotBlank;
-
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class WebpageDto {
-
-    @JsonProperty
-    @NotBlank
+public class AbstractCategoryResponse {
+    private Integer id;
+    private String name;
     private String slug;
-
-    @JsonProperty
     private String title;
-
-    @JsonProperty
     private String description;
 
     public String getSlug() {
@@ -41,5 +29,21 @@ public class WebpageDto {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

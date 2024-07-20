@@ -32,18 +32,19 @@ public class TagController {
     @PostMapping
     public ObjectCreated addTag(@RequestBody TagCreateRequest request) {
         Tag tag = new Tag();
-        DtoMapper.mapRequestToTag(request, tag);
+        mapRequestToTag(request, tag);
         tag = tagRepository.saveAndFlush(tag);
         return new ObjectCreated(tag.getId(), ErrorMessage.TAG_CREATED);
     }
 
     @Transactional
     @PutMapping("/{id}")
-    public ObjectUpdated updateTag(@PathVariable Integer id, @RequestBody TagCreateRequest request) {
+    public ObjectUpdated updateTag(@PathVariable Integer id,
+                                   @RequestBody TagCreateRequest request) {
         Optional<Tag> optionalTag = tagRepository.findById(id);
         if (optionalTag.isPresent()) {
             Tag existingTag = optionalTag.get();
-            DtoMapper.mapRequestToTag(request, existingTag);
+            mapRequestToTag(request, existingTag);
             return new ObjectUpdated(ErrorMessage.TAG_UPDATED);
         } else {
             throw new ObjectNotFoundException(String.format(ErrorMessage.TAG_NOT_FOUND_WITH_ID, id));
@@ -53,5 +54,12 @@ public class TagController {
     @DeleteMapping("/{id}")
     public void deleteTag(@PathVariable Integer id) {
         tagRepository.deleteById(id);
+    }
+
+    private void mapRequestToTag(TagCreateRequest request, Tag tag) {
+        tag.setName(request.getName());
+        tag.setSlug(request.getSlug());
+        tag.setTitle(request.getTitle());
+        tag.setDescription(request.getDescription());
     }
 }

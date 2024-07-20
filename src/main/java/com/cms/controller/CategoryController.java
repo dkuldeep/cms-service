@@ -1,7 +1,7 @@
 package com.cms.controller;
 
 import com.cms.constant.ErrorMessage;
-import com.cms.dto.CategoryDto;
+import com.cms.dto.response.CategoryDto;
 import com.cms.dto.DtoMapper;
 import com.cms.dto.request.CategoryCreateRequest;
 import com.cms.dto.response.ObjectCreated;
@@ -42,7 +42,7 @@ public class CategoryController {
     @PostMapping
     public ObjectCreated addCategory(@RequestBody CategoryCreateRequest request) {
         Category category = new Category();
-        DtoMapper.mapRequestToCategory(request, category);
+        mapRequestToCategory(request, category);
         category = categoryRepository.saveAndFlush(category);
         return new ObjectCreated(category.getId(), ErrorMessage.CATEGORY_CREATED);
     }
@@ -53,7 +53,7 @@ public class CategoryController {
         Optional<Category> optional = categoryRepository.findById(id);
         if (optional.isPresent()) {
             Category category = optional.get();
-            DtoMapper.mapRequestToCategory(request, category);
+            mapRequestToCategory(request, category);
             return new ObjectUpdated(ErrorMessage.CATEGORY_UPDATED);
         } else {
             throw new ObjectNotFoundException(String.format(ErrorMessage.CATEGORY_NOT_FOUND_WITH_ID, id));
@@ -63,5 +63,12 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public void getCategory(@PathVariable Integer id) {
         categoryRepository.deleteById(id);
+    }
+
+    private void mapRequestToCategory(CategoryCreateRequest request, Category category) {
+        category.setName(request.getName());
+        category.setSlug(request.getSlug());
+        category.setTitle(request.getTitle());
+        category.setDescription(request.getDescription());
     }
 }
