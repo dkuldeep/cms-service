@@ -140,19 +140,6 @@ public class PostService {
         return new HashSet<>(0);
     }
 
-    public Post getPostByCategoryAndSlug(String category, String slug) {
-        Category search = new Category();
-        search.setSlug(category);
-        Optional<Category> optional = categoryRepository.findOne(Example.of(search));
-        if (optional.isPresent()) {
-            Category category1 = optional.get();
-            Optional<Post> optionalPost = category1.getPosts().stream().filter(post -> post.getSlug().equals(slug)).findFirst();
-            return optionalPost.orElseThrow();
-        } else {
-            throw new ObjectNotFoundException(String.format(ErrorMessage.POST_NOT_FOUND_WITH_SLUG, slug));
-        }
-    }
-
     public List<Post> latest5() {
         Page<Post> page = postRepository.findAll(Pageable.ofSize(5));
         return page.get().toList();

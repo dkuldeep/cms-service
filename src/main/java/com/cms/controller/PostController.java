@@ -6,9 +6,12 @@ import com.cms.dto.request.PostCreateRequest;
 import com.cms.dto.response.ObjectCreated;
 import com.cms.dto.response.PostResponseDto;
 import com.cms.dto.response.ObjectUpdated;
+import com.cms.dto.response.PostSnippetDto;
 import com.cms.dto.wordpress.WordpressImportRequest;
+import com.cms.entity.Category;
 import com.cms.entity.Post;
 import com.cms.exception.ObjectNotFoundException;
+import com.cms.service.CategoryService;
 import com.cms.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,6 +42,9 @@ public class PostController implements WordpressImport {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     @GetMapping
     public List<PostResponseDto> getAllPosts(@RequestParam(required = false) String slug,
                                              @RequestParam(required = false) Integer category) {
@@ -68,8 +74,20 @@ public class PostController implements WordpressImport {
     @GetMapping("/byCategoryAndSlug")
     public PostResponseDto getPostByCategoryAndSlug(@RequestParam(required = false) String slug,
                                                     @RequestParam(required = false) String category) {
-        Post post = postService.getPostByCategoryAndSlug(category, slug);
-        return DtoMapper.POST_TO_DTO.apply(post);
+        Category category1 = categoryService.getCategoryBySlug(category);
+        Set<Post> allPosts = category1.getPosts();
+        Optional<Post> optionalPost = allPosts.stream().filter(post1 -> post1.getSlug().equals(slug)).findFirst();
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            List<Post> related = allPosts.stream().filter(post1 -> !post1.getSlug().equals(slug)).toList();
+            PostResponseDto dto = DtoMapper.POST_TO_DTO.apply(post);
+            dto.setRelated(related.stream()
+                    .map(post1 -> new PostSnippetDto(post1.getSlug(), post1.getHeading(), DtoMapper.CATEGORY_TO_SNIPPET.apply(post1.getCategory())))
+                    .toList());
+            return dto;
+        } else {
+            throw new ObjectNotFoundException(String.format(ErrorMessage.POST_NOT_FOUND_WITH_SLUG, slug));
+        }
     }
 
     @GetMapping("latest5")

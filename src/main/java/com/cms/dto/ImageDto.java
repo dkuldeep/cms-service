@@ -6,6 +6,10 @@ public class ImageDto {
     @JsonProperty
     private String location;
 
+    public ImageDto(String location) {
+        this.location = location;
+    }
+
     public String getLocation() {
         return location;
     }

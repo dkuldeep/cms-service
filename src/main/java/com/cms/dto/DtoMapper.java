@@ -3,6 +3,7 @@ package com.cms.dto;
 import com.cms.constant.ToolType;
 import com.cms.dto.response.BlogResponseDto;
 import com.cms.dto.response.CategoryDto;
+import com.cms.dto.response.CategorySnippetDto;
 import com.cms.dto.response.PostResponseDto;
 import com.cms.dto.response.TagDto;
 import com.cms.dto.response.ToolResponseDto;
@@ -27,6 +28,8 @@ public class DtoMapper {
         dto.setDescription(category.getDescription());
         return dto;
     };
+
+    public static final Function<Category, CategorySnippetDto> CATEGORY_TO_SNIPPET = category -> new CategorySnippetDto(category.getName(), category.getSlug());
 
     public static final Function<Tag, TagDto> TAG_TO_DTO = tag -> {
         TagDto dto = new TagDto();
@@ -65,6 +68,7 @@ public class DtoMapper {
         dto.setExcerpt(blog.getExcerpt());
         dto.setDescription(blog.getDescription());
         dto.setSlug(blog.getSlug());
+        dto.setImage(blog.getImage());
         return dto;
     };
 

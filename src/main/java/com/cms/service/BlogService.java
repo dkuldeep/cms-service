@@ -4,10 +4,8 @@ import com.cms.business.BlogRef;
 import com.cms.business.WordpressBlogImpl;
 import com.cms.constant.ErrorMessage;
 import com.cms.dto.request.BlogCreateRequest;
-import com.cms.dto.request.PostCreateRequest;
 import com.cms.dto.wordpress.WordpressPost;
 import com.cms.entity.Blog;
-import com.cms.entity.Post;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.repository.BlogRepository;
 import com.cms.repository.TagRepository;
@@ -17,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
@@ -116,5 +116,24 @@ public class BlogService {
                 .collect(Collectors.toSet()));
         blog.setSlug(request.getSlug());
         blog.setDescription(request.getDescription());
+    }
+
+    @Transactional
+    public String uploadImage(Integer id, MultipartFile file) throws IOException {
+        Optional<Blog> optional = blogRepository.findById(id);
+        if (optional.isPresent()) {
+            Blog blog = optional.get();
+            String path = imageService.saveImage(file);
+            blog.setImage(path);
+            return path;
+        } else {
+            throw new ObjectNotFoundException(String.format(ErrorMessage.POST_BY_ID_NOT_FOUND, id));
+        }
+    }
+
+    public List<Blog> getBySlug(String slug) {
+        Blog blog = new Blog();
+        blog.setSlug(slug);
+        return blogRepository.findAll(Example.of(blog));
     }
 }

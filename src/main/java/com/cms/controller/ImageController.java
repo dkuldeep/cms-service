@@ -40,8 +40,6 @@ public class ImageController {
     public ImageDto upload(@RequestParam("file") MultipartFile file) throws IOException {
         Files.createDirectories(Paths.get(imageUploadDir));
         String location = imageService.saveImage(file);
-        ImageDto imageDto = new ImageDto();
-        imageDto.setLocation(location);
-        return imageDto;
+        return new ImageDto(location);
     }
 }
