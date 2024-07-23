@@ -1,7 +1,7 @@
 package com.cms.service;
 
-import com.cms.dto.response.CategoryDto;
 import com.cms.dto.DtoMapper;
+import com.cms.dto.response.CategoryDto;
 import com.cms.entity.Category;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.repository.CategoryRepository;
@@ -27,6 +27,6 @@ public class CategoryService {
         Category search = new Category();
         search.setSlug(slug);
         Optional<Category> optionalCategory = categoryRepository.findOne(Example.of(search));
-        return optionalCategory.orElseThrow();
+        return optionalCategory.orElseThrow(() -> new ObjectNotFoundException("Category not found"));
     }
 }

@@ -24,9 +24,6 @@ public class Tag extends Webpage {
     @ManyToMany(mappedBy = "tags")
     private Set<Tool> tools = new HashSet<>(0);
 
-    @ManyToMany(mappedBy = "tags")
-    private Set<Tool> blogs = new HashSet<>(0);
-
     public String getName() {
         return name;
     }
@@ -59,11 +56,4 @@ public class Tag extends Webpage {
         this.title = title;
     }
 
-    public Set<Tool> getBlogs() {
-        return blogs;
-    }
-
-    public void setBlogs(Set<Tool> blogs) {
-        this.blogs = blogs;
-    }
 }

@@ -2,17 +2,25 @@ package com.cms.controller;
 
 import com.cms.constant.ErrorMessage;
 import com.cms.dto.DtoMapper;
-import com.cms.dto.response.TagDto;
 import com.cms.dto.request.TagCreateRequest;
 import com.cms.dto.response.ObjectCreated;
 import com.cms.dto.response.ObjectUpdated;
+import com.cms.dto.response.TagDto;
 import com.cms.entity.Tag;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,6 +41,7 @@ public class TagController {
     public ObjectCreated addTag(@RequestBody TagCreateRequest request) {
         Tag tag = new Tag();
         mapRequestToTag(request, tag);
+        tag.setCreated(LocalDateTime.now());
         tag = tagRepository.saveAndFlush(tag);
         return new ObjectCreated(tag.getId(), ErrorMessage.TAG_CREATED);
     }
@@ -45,6 +54,7 @@ public class TagController {
         if (optionalTag.isPresent()) {
             Tag existingTag = optionalTag.get();
             mapRequestToTag(request, existingTag);
+            existingTag.setUpdated(LocalDateTime.now());
             return new ObjectUpdated(ErrorMessage.TAG_UPDATED);
         } else {
             throw new ObjectNotFoundException(String.format(ErrorMessage.TAG_NOT_FOUND_WITH_ID, id));

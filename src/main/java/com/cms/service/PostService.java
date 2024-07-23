@@ -1,7 +1,7 @@
 package com.cms.service;
 
+import com.cms.business.PostAdapter;
 import com.cms.business.PostRef;
-import com.cms.business.WordpressPostImpl;
 import com.cms.constant.ErrorMessage;
 import com.cms.dto.request.PostCreateRequest;
 import com.cms.dto.wordpress.WordpressPost;
@@ -19,7 +19,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
@@ -53,8 +55,8 @@ public class PostService {
 
     public Post createPost(PostCreateRequest request) {
         Post post = new Post();
-        post.setCreated(LocalDateTime.now());
         mapRequestToPost(request, post);
+        post.setCreated(LocalDateTime.now());
         return postRepository.saveAndFlush(post);
     }
 
@@ -124,7 +126,7 @@ public class PostService {
             if (postRepository.exists(Example.of(search))) {
                 log.warn(MessageFormat.format(ErrorMessage.OBJECT_ALREADY_EXIST_WITH_SLUG, "Post", wordpressPost.getSlug()));
             } else {
-                posts.add(createPost(new WordpressPostImpl(wordpressPost, imageService, tagRepository, categoryRepository)));
+                posts.add(createPost(new PostAdapter(wordpressPost, imageService, tagRepository, categoryRepository)));
             }
         }
         posts = postRepository.saveAllAndFlush(posts);
@@ -143,5 +145,18 @@ public class PostService {
     public List<Post> latest5() {
         Page<Post> page = postRepository.findAll(Pageable.ofSize(5));
         return page.get().toList();
+    }
+
+    @Transactional
+    public String uploadImage(Integer id, MultipartFile file) throws IOException {
+        Optional<Post> optional = postRepository.findById(id);
+        if (optional.isPresent()) {
+            Post post = optional.get();
+            String path = imageService.saveImage(file);
+            post.setImage(path);
+            return path;
+        } else {
+            throw new ObjectNotFoundException(String.format(ErrorMessage.POST_BY_ID_NOT_FOUND, id));
+        }
     }
 }

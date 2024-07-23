@@ -33,6 +33,8 @@ public class Webpage {
     @Temporal(TemporalType.TIMESTAMP)
     protected LocalDateTime updated;
 
+//    ------------------------------------------------------------------------------------------------------------------
+
     public String getSlug() {
         return slug;
     }

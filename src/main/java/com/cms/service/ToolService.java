@@ -1,7 +1,7 @@
 package com.cms.service;
 
+import com.cms.business.ToolAdapter;
 import com.cms.business.ToolRef;
-import com.cms.business.WordpressToolImpl;
 import com.cms.constant.ErrorMessage;
 import com.cms.dto.request.ToolCreateRequest;
 import com.cms.dto.wordpress.WordpressPost;
@@ -56,7 +56,7 @@ public class ToolService {
             if (toolRepository.exists(toolExample)) {
                 log.warn("Tool with slug '{}' already exists, ignoring it.", wordpressPost.getSlug());
             } else {
-                tools.add(addNewTool(new WordpressToolImpl(wordpressPost, imageService, tagRepository)));
+                tools.add(addNewTool(new ToolAdapter(wordpressPost, imageService, tagRepository)));
             }
         }
         toolRepository.saveAllAndFlush(tools);
@@ -65,7 +65,7 @@ public class ToolService {
 
     public Tool addNewTool(ToolRef toolRef) {
         Tool tool = new Tool();
-        tool.setTagline(tool.getTagline());
+        tool.setTagline(toolRef.getTagline());
         tool.setName(toolRef.getName());
         tool.setType(toolRef.getType());
         tool.setContent(toolRef.getContent());

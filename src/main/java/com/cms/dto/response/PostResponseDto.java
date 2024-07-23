@@ -12,6 +12,7 @@ public class PostResponseDto extends AbstractPostResponse {
 
     private CategoryDto category;
     private List<PostSnippetDto> related = new ArrayList<>(0);
+    private String image;
 
     public CategoryDto getCategory() {
         return category;
@@ -27,5 +28,13 @@ public class PostResponseDto extends AbstractPostResponse {
 
     public void setRelated(List<PostSnippetDto> related) {
         this.related = related;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

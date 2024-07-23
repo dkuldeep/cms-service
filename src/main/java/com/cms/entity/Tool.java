@@ -35,6 +35,8 @@ public class Tool extends Webpage {
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private Set<Tag> tags = new HashSet<>(0);
 
+//    ------------------------------------------------------------------------------------------------------------------
+
     public String getName() {
         return name;
     }

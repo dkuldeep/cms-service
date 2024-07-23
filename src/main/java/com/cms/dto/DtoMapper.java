@@ -1,13 +1,11 @@
 package com.cms.dto;
 
 import com.cms.constant.ToolType;
-import com.cms.dto.response.BlogResponseDto;
 import com.cms.dto.response.CategoryDto;
 import com.cms.dto.response.CategorySnippetDto;
 import com.cms.dto.response.PostResponseDto;
 import com.cms.dto.response.TagDto;
 import com.cms.dto.response.ToolResponseDto;
-import com.cms.entity.Blog;
 import com.cms.entity.Category;
 import com.cms.entity.Post;
 import com.cms.entity.Tag;
@@ -54,21 +52,7 @@ public class DtoMapper {
         dto.setExcerpt(post.getExcerpt());
         dto.setDescription(post.getDescription());
         dto.setSlug(post.getSlug());
-        return dto;
-    };
-
-    public static final Function<Blog, BlogResponseDto> BLOG_TO_DTO = blog -> {
-        BlogResponseDto dto = new BlogResponseDto();
-        dto.setId(blog.getId());
-        dto.setHeading(blog.getHeading());
-        dto.setUpdated(blog.getUpdated());
-        dto.setCreated(blog.getCreated());
-        dto.setTags(blog.getTags().stream().map(TAG_TO_DTO).toList());
-        dto.setContent(blog.getContent());
-        dto.setExcerpt(blog.getExcerpt());
-        dto.setDescription(blog.getDescription());
-        dto.setSlug(blog.getSlug());
-        dto.setImage(blog.getImage());
+        dto.setImage(post.getImage());
         return dto;
     };
 

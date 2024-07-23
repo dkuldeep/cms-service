@@ -3,7 +3,6 @@ package com.cms.controller;
 import com.cms.dto.ImageDto;
 import com.cms.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,18 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/images")
 public class ImageController {
-
-    @Value("${server.host}")
-    private String host;
-
-    @Value("${image.upload.path}")
-    private String imageUploadDir;
 
     @Autowired
     private ImageService imageService;
@@ -38,7 +29,6 @@ public class ImageController {
 
     @PostMapping
     public ImageDto upload(@RequestParam("file") MultipartFile file) throws IOException {
-        Files.createDirectories(Paths.get(imageUploadDir));
         String location = imageService.saveImage(file);
         return new ImageDto(location);
     }

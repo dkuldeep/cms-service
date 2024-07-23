@@ -1,4 +1,4 @@
-package com.cms.controller;
+package com.cms.business;
 
 import com.cms.dto.response.ObjectCreated;
 import com.cms.dto.wordpress.WordpressImportRequest;

@@ -32,6 +32,7 @@ public class ImageService {
     }
 
     public String saveImage(MultipartFile file) throws IOException {
+        Files.createDirectories(Paths.get(imageUploadDir));
         Path fileNameAndPath = Paths.get(imageUploadDir, file.getOriginalFilename());
         Files.write(fileNameAndPath, file.getBytes());
         return getImageUrlWithHost(file.getOriginalFilename());

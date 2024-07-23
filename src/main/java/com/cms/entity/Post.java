@@ -7,11 +7,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 import javax.validation.constraints.NotEmpty;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,6 +34,11 @@ public class Post extends Webpage {
 
     @Column(length = Integer.MAX_VALUE)
     private String content;
+
+    @Column
+    private String image;
+
+//    ------------------------------------------------------------------------------------------------------------------
 
     public String getExcerpt() {
         return excerpt;
@@ -76,5 +78,13 @@ public class Post extends Webpage {
 
     public void setHeading(String heading) {
         this.heading = heading;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }
