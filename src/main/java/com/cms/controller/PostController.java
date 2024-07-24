@@ -8,7 +8,6 @@ import com.cms.dto.request.PostCreateRequest;
 import com.cms.dto.response.ObjectCreated;
 import com.cms.dto.response.ObjectUpdated;
 import com.cms.dto.response.PostResponseDto;
-import com.cms.dto.response.PostSnippetDto;
 import com.cms.dto.wordpress.WordpressImportRequest;
 import com.cms.entity.Category;
 import com.cms.entity.Post;
@@ -88,9 +87,7 @@ public class PostController implements WordpressImport {
             Post post = optionalPost.get();
             List<Post> related = allPosts.stream().filter(post1 -> !post1.getSlug().equals(slug)).toList();
             PostResponseDto dto = DtoMapper.POST_TO_DTO.apply(post);
-            dto.setRelated(related.stream()
-                    .map(post1 -> new PostSnippetDto(post1.getSlug(), post1.getHeading(), DtoMapper.CATEGORY_TO_SNIPPET.apply(post1.getCategory())))
-                    .toList());
+            dto.setRelated(related.stream().map(DtoMapper.POST_TO_SNIPPET_DTO).toList());
             return dto;
         } else {
             throw new ObjectNotFoundException(String.format(ErrorMessage.POST_NOT_FOUND_WITH_SLUG, slug));

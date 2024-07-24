@@ -1,14 +1,24 @@
 package com.cms.dto.response;
 
+import java.time.LocalDateTime;
+
 public class PostSnippetDto {
     private String slug;
     private String heading;
     private CategorySnippetDto category;
+    private LocalDateTime created;
+    private String image;
 
-    public PostSnippetDto(String slug, String heading, CategorySnippetDto category) {
+    public PostSnippetDto(String slug,
+                          String heading,
+                          CategorySnippetDto category,
+                          LocalDateTime created,
+                          String image) {
         this.slug = slug;
         this.heading = heading;
         this.category = category;
+        this.created = created;
+        this.image = image;
     }
 
     public String getSlug() {
@@ -33,5 +43,21 @@ public class PostSnippetDto {
 
     public void setCategory(CategorySnippetDto category) {
         this.category = category;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

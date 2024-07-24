@@ -4,6 +4,7 @@ import com.cms.constant.ToolType;
 import com.cms.dto.response.CategoryDto;
 import com.cms.dto.response.CategorySnippetDto;
 import com.cms.dto.response.PostResponseDto;
+import com.cms.dto.response.PostSnippetDto;
 import com.cms.dto.response.TagDto;
 import com.cms.dto.response.ToolResponseDto;
 import com.cms.entity.Category;
@@ -28,6 +29,7 @@ public class DtoMapper {
     };
 
     public static final Function<Category, CategorySnippetDto> CATEGORY_TO_SNIPPET = category -> new CategorySnippetDto(category.getName(), category.getSlug());
+    public static final Function<Post, PostSnippetDto> POST_TO_SNIPPET_DTO = post -> new PostSnippetDto(post.getSlug(), post.getHeading(), CATEGORY_TO_SNIPPET.apply(post.getCategory()), post.getCreated(), post.getImage());
 
     public static final Function<Tag, TagDto> TAG_TO_DTO = tag -> {
         TagDto dto = new TagDto();
