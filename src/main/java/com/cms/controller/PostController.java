@@ -2,6 +2,7 @@ package com.cms.controller;
 
 import com.cms.business.WordpressImport;
 import com.cms.constant.ErrorMessage;
+import com.cms.constant.PredefinedCategory;
 import com.cms.dto.DtoMapper;
 import com.cms.dto.ImageDto;
 import com.cms.dto.request.PostCreateRequest;
@@ -102,7 +103,8 @@ public class PostController implements WordpressImport {
 
     @GetMapping("latest3")
     public List<PostResponseDto> latest3() {
-        return postService.getAllPosts()
+        Category category = categoryService.getCategoryBySlug(PredefinedCategory.BLOG.getSlug());
+        return category.getPosts()
                 .stream()
                 .sorted(Comparator.comparing(Webpage::getCreated))
                 .map(DtoMapper.POST_TO_DTO)
