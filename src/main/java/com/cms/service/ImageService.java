@@ -20,7 +20,7 @@ public class ImageService {
     @Value("${server.host}")
     private String host;
 
-    @Value("${image.upload.path}")
+    @Value("${image.upload.dir}")
     private String imageUploadDir;
 
     public byte[] readFile(String filename) throws IOException {
