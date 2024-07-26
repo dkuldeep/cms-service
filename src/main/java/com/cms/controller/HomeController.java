@@ -1,6 +1,6 @@
 package com.cms.controller;
 
-import com.cms.constant.PredefinedCategory;
+import com.cms.constant.DefaultCategory;
 import com.cms.entity.Category;
 import com.cms.entity.Tag;
 import com.cms.repository.CategoryRepository;
@@ -36,7 +36,7 @@ public class HomeController {
     @GetMapping("add-default")
     @ResponseStatus(HttpStatus.OK)
     public void addDefaultSettings() {
-        for (PredefinedCategory category : PredefinedCategory.values()) {
+        for (DefaultCategory category : DefaultCategory.values()) {
             Category search = new Category();
             search.setSlug(category.getSlug());
             Optional<Category> optional = categoryRepository.findOne(Example.of(search));

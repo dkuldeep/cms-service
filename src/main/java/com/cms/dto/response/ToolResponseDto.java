@@ -15,6 +15,8 @@ public class ToolResponseDto extends AbstractCategoryResponse {
     private String content;
     private String tagline;
     private List<TagDto> tags = Collections.emptyList();
+    private List<PostSnippetDto> relatedPosts = Collections.emptyList();
+    private List<PostSnippetDto> relatedBlogs = Collections.emptyList();
 
     public ToolTypeDto getType() {
         return type;
@@ -46,5 +48,21 @@ public class ToolResponseDto extends AbstractCategoryResponse {
 
     public void setTags(List<TagDto> tags) {
         this.tags = tags;
+    }
+
+    public List<PostSnippetDto> getRelatedPosts() {
+        return relatedPosts;
+    }
+
+    public void setRelatedPosts(List<PostSnippetDto> relatedPosts) {
+        this.relatedPosts = relatedPosts;
+    }
+
+    public List<PostSnippetDto> getRelatedBlogs() {
+        return relatedBlogs;
+    }
+
+    public void setRelatedBlogs(List<PostSnippetDto> relatedBlogs) {
+        this.relatedBlogs = relatedBlogs;
     }
 }

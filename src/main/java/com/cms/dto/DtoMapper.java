@@ -1,5 +1,6 @@
 package com.cms.dto;
 
+import com.cms.constant.DefaultCategory;
 import com.cms.constant.ToolType;
 import com.cms.dto.response.CategoryDto;
 import com.cms.dto.response.CategorySnippetDto;
@@ -12,6 +13,7 @@ import com.cms.entity.Post;
 import com.cms.entity.Tag;
 import com.cms.entity.Tool;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -29,7 +31,16 @@ public class DtoMapper {
     };
 
     public static final Function<Category, CategorySnippetDto> CATEGORY_TO_SNIPPET = category -> new CategorySnippetDto(category.getName(), category.getSlug());
-    public static final Function<Post, PostSnippetDto> POST_TO_SNIPPET_DTO = post -> new PostSnippetDto(post.getSlug(), post.getHeading(), CATEGORY_TO_SNIPPET.apply(post.getCategory()), post.getCreated(), post.getImage());
+    public static final Function<Post, PostSnippetDto> POST_TO_SNIPPET_DTO = post -> {
+        PostSnippetDto dto = new PostSnippetDto();
+        dto.setExcerpt(post.getExcerpt());
+        dto.setImage(post.getImage());
+        dto.setCategory(CATEGORY_TO_SNIPPET.apply(post.getCategory()));
+        dto.setSlug(post.getSlug());
+        dto.setHeading(post.getHeading());
+        dto.setCreated(post.getCreated());
+        return dto;
+    };
 
     public static final Function<Tag, TagDto> TAG_TO_DTO = tag -> {
         TagDto dto = new TagDto();
@@ -71,6 +82,18 @@ public class DtoMapper {
         dto.setSlug(tool.getSlug());
         dto.setTitle(tool.getTitle());
         dto.setDescription(tool.getDescription());
+        List<PostSnippetDto> blogs = tool.getTags().stream()
+                .flatMap(tag -> tag.getPosts().stream())
+                .filter(post -> post.getCategory().getSlug().equals(DefaultCategory.BLOG.getSlug()))
+                .map(POST_TO_SNIPPET_DTO)
+                .toList();
+        List<PostSnippetDto> articles = tool.getTags().stream()
+                .flatMap(tag -> tag.getPosts().stream())
+                .filter(post -> !DefaultCategory.getAllSlugs().contains(post.getCategory().getSlug()))
+                .map(POST_TO_SNIPPET_DTO)
+                .toList();
+        dto.setRelatedPosts(articles);
+        dto.setRelatedBlogs(blogs);
         return dto;
     };
 

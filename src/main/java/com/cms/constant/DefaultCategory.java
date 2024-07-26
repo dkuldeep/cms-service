@@ -1,6 +1,9 @@
 package com.cms.constant;
 
-public enum PredefinedCategory {
+import java.util.Arrays;
+import java.util.List;
+
+public enum DefaultCategory {
     UNCATEGORIZED("Uncategorized", "uncategorized"),
     BLOG("-- Blog --", "blog"),
     PAGES("-- Pages --", "pages");
@@ -8,7 +11,7 @@ public enum PredefinedCategory {
     private final String label;
     private final String slug;
 
-    PredefinedCategory(String label, String slug) {
+    DefaultCategory(String label, String slug) {
         this.label = label;
         this.slug = slug;
     }
@@ -19,5 +22,9 @@ public enum PredefinedCategory {
 
     public String getSlug() {
         return slug;
+    }
+
+    public static List<String> getAllSlugs() {
+        return Arrays.stream(values()).map(DefaultCategory::getSlug).toList();
     }
 }

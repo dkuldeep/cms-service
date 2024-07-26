@@ -7,7 +7,9 @@ public class ErrorMessage {
     public static final String POST_BY_ID_NOT_FOUND = "Post not found with id: %d";
     public static final String POST_NOT_FOUND_WITH_SLUG = "Post not found with slug: %s";
     public static final String TAG_NOT_FOUND_WITH_ID = "Tag not found with id: %s";
+
     public static final String CATEGORY_NOT_FOUND_WITH_ID = "Category not found with id: %s";
+    public static final String CATEGORY_NOT_FOUND_WITH_SLUG = "Category not found with slug: %s";
     public static final String CATEGORY_CREATED = "Category Created Successfully";
     public static final String CATEGORY_UPDATED = "Category Updated";
     //

@@ -8,18 +8,7 @@ public class PostSnippetDto {
     private CategorySnippetDto category;
     private LocalDateTime created;
     private String image;
-
-    public PostSnippetDto(String slug,
-                          String heading,
-                          CategorySnippetDto category,
-                          LocalDateTime created,
-                          String image) {
-        this.slug = slug;
-        this.heading = heading;
-        this.category = category;
-        this.created = created;
-        this.image = image;
-    }
+    private String excerpt;
 
     public String getSlug() {
         return slug;
@@ -59,5 +48,13 @@ public class PostSnippetDto {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getExcerpt() {
+        return excerpt;
+    }
+
+    public void setExcerpt(String excerpt) {
+        this.excerpt = excerpt;
     }
 }

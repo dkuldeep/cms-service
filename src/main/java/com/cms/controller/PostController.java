@@ -2,7 +2,7 @@ package com.cms.controller;
 
 import com.cms.business.WordpressImport;
 import com.cms.constant.ErrorMessage;
-import com.cms.constant.PredefinedCategory;
+import com.cms.constant.DefaultCategory;
 import com.cms.dto.DtoMapper;
 import com.cms.dto.ImageDto;
 import com.cms.dto.request.PostCreateRequest;
@@ -78,37 +78,24 @@ public class PostController implements WordpressImport {
         }
     }
 
-    @GetMapping("byCategoryAndSlug")
-    public PostResponseDto getPostByCategoryAndSlug(@RequestParam(required = false) String slug,
-                                                    @RequestParam(required = false) String category) {
-        Category category1 = categoryService.getCategoryBySlug(category);
-        Set<Post> allPosts = category1.getPosts();
-        Optional<Post> optionalPost = allPosts.stream().filter(post1 -> post1.getSlug().equals(slug)).findFirst();
-        if (optionalPost.isPresent()) {
-            Post post = optionalPost.get();
-            List<Post> related = allPosts.stream().filter(post1 -> !post1.getSlug().equals(slug)).toList();
-            PostResponseDto dto = DtoMapper.POST_TO_DTO.apply(post);
-            dto.setRelated(related.stream().map(DtoMapper.POST_TO_SNIPPET_DTO).toList());
-            return dto;
-        } else {
-            throw new ObjectNotFoundException(String.format(ErrorMessage.POST_NOT_FOUND_WITH_SLUG, slug));
-        }
-    }
-
     @GetMapping("latest5")
     public List<PostResponseDto> latest5() {
         List<Post> posts = postService.latest5();
-        return posts.stream().map(DtoMapper.POST_TO_DTO).toList();
+        return posts.stream()
+                .filter(post -> !DefaultCategory.getAllSlugs().contains(post.getCategory().getSlug()))
+                .sorted(Comparator.comparing(Webpage::getCreated))
+                .map(DtoMapper.POST_TO_DTO)
+                .toList();
     }
 
     @GetMapping("latest3")
     public List<PostResponseDto> latest3() {
-        Category category = categoryService.getCategoryBySlug(PredefinedCategory.BLOG.getSlug());
-        return category.getPosts()
-                .stream()
-                .sorted(Comparator.comparing(Webpage::getCreated))
-                .map(DtoMapper.POST_TO_DTO)
-                .toList();
+        Optional<Category> optionalCategory = categoryService.findBySlug(DefaultCategory.BLOG.getSlug());
+        if (optionalCategory.isPresent()) {
+            return optionalCategory.get().getPosts().stream().sorted(Comparator.comparing(Webpage::getCreated)).map(DtoMapper.POST_TO_DTO).toList();
+        } else {
+            throw new ObjectNotFoundException(String.format(ErrorMessage.CATEGORY_NOT_FOUND_WITH_SLUG, DefaultCategory.BLOG.getSlug()));
+        }
     }
 
     @GetMapping("{id}")
