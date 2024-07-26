@@ -52,11 +52,15 @@ public class CategoryController {
             Optional<Category> optionalCategory = categoryService.findBySlug(slug);
             if (optionalCategory.isPresent()) {
                 categories = Collections.singletonList(optionalCategory.get());
+                return categories.stream().map(DtoMapper.CATEGORY_TO_DTO).toList();
             }
         } else {
             categories = categoryRepository.findAll();
         }
-        return categories.stream().map(DtoMapper.CATEGORY_TO_DTO).collect(Collectors.toList());
+        return categories.stream()
+                .filter(category -> !DefaultCategory.getAllSlugs().contains(category.getSlug()))
+                .map(DtoMapper.CATEGORY_TO_DTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")

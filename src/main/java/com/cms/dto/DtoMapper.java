@@ -31,6 +31,7 @@ public class DtoMapper {
     };
 
     public static final Function<Category, CategorySnippetDto> CATEGORY_TO_SNIPPET = category -> new CategorySnippetDto(category.getName(), category.getSlug());
+
     public static final Function<Post, PostSnippetDto> POST_TO_SNIPPET_DTO = post -> {
         PostSnippetDto dto = new PostSnippetDto();
         dto.setExcerpt(post.getExcerpt());
