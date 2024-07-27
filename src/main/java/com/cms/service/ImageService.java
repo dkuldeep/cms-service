@@ -1,6 +1,8 @@
 package com.cms.service;
 
 import com.cms.controller.ImageController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,7 @@ import java.nio.file.Paths;
 @Service
 public class ImageService {
 
+    private static final Logger log = LoggerFactory.getLogger(ImageService.class);
     @Value("${server.host}")
     private String host;
 
@@ -33,9 +36,11 @@ public class ImageService {
 
     public String saveImage(MultipartFile file) throws IOException {
         Files.createDirectories(Paths.get(imageUploadDir));
-        Path fileNameAndPath = Paths.get(imageUploadDir, file.getOriginalFilename());
+        String name = file.getOriginalFilename().replaceAll(" ", "-");
+        Path fileNameAndPath = Paths.get(imageUploadDir, name);
+        log.info("Saving image '{}' with name: '{}'", file.getOriginalFilename(), name);
         Files.write(fileNameAndPath, file.getBytes());
-        return getImageUrlWithHost(file.getOriginalFilename());
+        return getImageUrlWithHost(name);
     }
 
     public String saveImage(String url) {
