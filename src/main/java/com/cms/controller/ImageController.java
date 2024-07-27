@@ -22,7 +22,7 @@ public class ImageController {
     @Autowired
     private ImageService imageService;
 
-    @GetMapping(value = "/{filename}", produces = {MediaType.IMAGE_JPEG_VALUE})
+    @GetMapping(value = "/{filename}")
     public ResponseEntity<byte[]> getImage(@PathVariable String filename) throws IOException {
         return ResponseEntity.ok().body(imageService.readFile(filename));
     }

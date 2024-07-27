@@ -159,4 +159,13 @@ public class PostService {
             throw new ObjectNotFoundException(String.format(ErrorMessage.POST_BY_ID_NOT_FOUND, id));
         }
     }
+
+    @Transactional
+    public void removeImage(Integer id) {
+        Optional<Post> optional = postRepository.findById(id);
+        if (optional.isPresent()) {
+            Post post = optional.get();
+            post.setImage(null);
+        }
+    }
 }

@@ -58,6 +58,14 @@ public class CategoryController {
             categories = categoryRepository.findAll();
         }
         return categories.stream()
+                .map(DtoMapper.CATEGORY_TO_DTO)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("visible")
+    public List<CategoryDto> getVisibleCategories() {
+        List<Category> categories = categoryRepository.findAll();
+        return categories.stream()
                 .filter(category -> !DefaultCategory.getAllSlugs().contains(category.getSlug()))
                 .map(DtoMapper.CATEGORY_TO_DTO)
                 .collect(Collectors.toList());

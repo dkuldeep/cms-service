@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum DefaultCategory {
-    UNCATEGORIZED("Uncategorized", "uncategorized"),
+    UNCATEGORIZED("-- Uncategorized --", "uncategorized"),
     BLOG("-- Blog --", "blog"),
     PAGES("-- Pages --", "pages");
 

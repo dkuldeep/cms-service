@@ -136,4 +136,9 @@ public class PostController implements WordpressImport {
         String path = postService.uploadImage(id, file);
         return new ImageDto(path);
     }
+
+    @DeleteMapping("{id}/image")
+    public void removeImage(@PathVariable("id") Integer id) throws IOException {
+        postService.removeImage(id);
+    }
 }
