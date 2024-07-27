@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 public class ImageService {
 
     private static final Logger log = LoggerFactory.getLogger(ImageService.class);
+
     @Value("${server.host}")
     private String host;
 

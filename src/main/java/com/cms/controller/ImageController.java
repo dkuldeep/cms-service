@@ -24,7 +24,7 @@ public class ImageController {
 
     @GetMapping(value = "/{filename}")
     public ResponseEntity<byte[]> getImage(@PathVariable String filename) throws IOException {
-        return ResponseEntity.ok().body(imageService.readFile(filename));
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageService.readFile(filename));
     }
 
     @PostMapping
