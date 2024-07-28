@@ -5,6 +5,7 @@ import com.cms.entity.Category;
 import com.cms.entity.Tag;
 import com.cms.repository.CategoryRepository;
 import com.cms.repository.TagRepository;
+import com.cms.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,9 @@ public class HomeController {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
     private TagRepository tagRepository;
 
     @GetMapping
@@ -37,15 +41,16 @@ public class HomeController {
     @ResponseStatus(HttpStatus.OK)
     public void addDefaultSettings() {
         for (DefaultCategory category : DefaultCategory.values()) {
-            Category search = new Category();
-            search.setSlug(category.getSlug());
-            Optional<Category> optional = categoryRepository.findOne(Example.of(search));
-            if (optional.isEmpty()) {
+            Optional<Category> optionalCategory = categoryService.findBySlug(category.getSlug());
+            if (optionalCategory.isEmpty()) {
                 Category category1 = new Category();
                 category1.setSlug(category.getSlug());
                 category1.setName(category.getLabel());
                 category1.setCreated(LocalDateTime.now());
                 categoryRepository.save(category1);
+            } else {
+                Category existing = optionalCategory.get();
+                existing.setName(category.getLabel());
             }
         }
         categoryRepository.flush();
