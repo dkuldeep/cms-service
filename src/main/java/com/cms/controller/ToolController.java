@@ -94,4 +94,10 @@ public class ToolController implements WordpressImport {
     public void deleteById(@PathVariable("id") Integer id) {
         toolService.deleteById(id);
     }
+
+    @GetMapping("headerTools")
+    public List<ToolResponseDto> getHeaderTools() {
+        List<Tool> headerTools = toolService.getHeaderTools();
+        return headerTools.stream().map(DtoMapper.TOOL_TO_DTO).collect(Collectors.toList());
+    }
 }

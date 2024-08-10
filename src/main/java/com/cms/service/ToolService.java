@@ -12,6 +12,7 @@ import com.cms.repository.ToolRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +32,10 @@ import java.util.stream.Collectors;
 public class ToolService {
 
     private static final Logger log = LoggerFactory.getLogger(ToolService.class);
+
+    @Value("${header.tools}")
+    private String headerTools;
+
     @Autowired
     private ToolRepository toolRepository;
 
@@ -106,6 +112,18 @@ public class ToolService {
         Tool search = new Tool();
         search.setSlug(slug);
         return toolRepository.findAll(Example.of(search));
+    }
+
+    public List<Tool> getHeaderTools() {
+        List<String> slugs = Arrays.stream(headerTools.trim().split(",")).toList();
+        List<Tool> result = new ArrayList<>(0);
+        for (String slug : slugs) {
+            Tool search = new Tool();
+            search.setSlug(slug);
+            Optional<Tool> optionalTool = toolRepository.findOne(Example.of(search));
+            optionalTool.ifPresent(result::add);
+        }
+        return result;
     }
 
     private void mapRequestToTool(ToolCreateRequest request, Tool tool) {
