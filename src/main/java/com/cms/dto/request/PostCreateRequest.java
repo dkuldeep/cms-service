@@ -1,5 +1,6 @@
 package com.cms.dto.request;
 
+import com.cms.constant.PostType;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
@@ -15,14 +16,14 @@ public class PostCreateRequest {
     private List<Integer> tags = Collections.emptyList();
     private String slug;
     private String description;
-    private Integer category;
+    private PostType type;
 
-    public Integer getCategory() {
-        return category;
+    public PostType getType() {
+        return type;
     }
 
-    public void setCategory(Integer category) {
-        this.category = category;
+    public void setType(PostType type) {
+        this.type = type;
     }
 
     public String getExcerpt() {

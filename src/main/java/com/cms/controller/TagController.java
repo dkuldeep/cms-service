@@ -9,7 +9,9 @@ import com.cms.dto.response.TagDto;
 import com.cms.entity.Tag;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.repository.TagRepository;
+import com.cms.service.HasSlug;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +30,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/tags")
-public class TagController {
+public class TagController implements HasSlug {
 
     @Autowired
     private TagRepository tagRepository;
@@ -35,6 +38,16 @@ public class TagController {
     @GetMapping
     public List<TagDto> getAll() {
         return tagRepository.findAll().stream().map(DtoMapper.TAG_TO_DTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @GetMapping("/slug/{slug}")
+    public Object getBySlug(@PathVariable String slug) {
+        Tag tag = new Tag();
+        tag.setSlug(slug);
+        Optional<Tag> optional = tagRepository.findOne(Example.of(tag));
+        return optional.map(DtoMapper.TAG_TO_DTO)
+                .orElseThrow(() -> new ObjectNotFoundException(MessageFormat.format(ErrorMessage.TAG_NOT_FOUND_WITH_SLUG, slug)));
     }
 
     @PostMapping

@@ -114,6 +114,12 @@ public class ToolService {
         return toolRepository.findAll(Example.of(search));
     }
 
+    public Optional<Tool> findBySlug(String slug) {
+        Tool search = new Tool();
+        search.setSlug(slug);
+        return toolRepository.findOne(Example.of(search));
+    }
+
     public List<Tool> getHeaderTools() {
         List<String> slugs = Arrays.stream(headerTools.trim().split(",")).toList();
         List<Tool> result = new ArrayList<>(0);
@@ -128,7 +134,7 @@ public class ToolService {
 
     private void mapRequestToTool(ToolCreateRequest request, Tool tool) {
         tool.setName(request.getName());
-        tool.setType(request.getType());
+        tool.setType(request.getType().name());
         tool.setContent(request.getContent());
         tool.setTagline(request.getTagline());
         tool.setTags(request.getTags().stream()

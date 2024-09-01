@@ -1,6 +1,6 @@
 package com.cms.dto;
 
-public class AbstractCategoryResponse {
+public class AbstractTagResponse {
     private Integer id;
     private String name;
     private String slug;

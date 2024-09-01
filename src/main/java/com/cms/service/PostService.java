@@ -3,19 +3,17 @@ package com.cms.service;
 import com.cms.business.PostAdapter;
 import com.cms.business.PostRef;
 import com.cms.constant.ErrorMessage;
+import com.cms.constant.PostType;
 import com.cms.dto.request.PostCreateRequest;
 import com.cms.dto.wordpress.WordpressPost;
-import com.cms.entity.Category;
 import com.cms.entity.Post;
 import com.cms.exception.ObjectNotFoundException;
-import com.cms.repository.CategoryRepository;
 import com.cms.repository.PostRepository;
 import com.cms.repository.TagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,9 +37,6 @@ public class PostService {
     private static final Logger log = LoggerFactory.getLogger(PostService.class);
     @Autowired
     private PostRepository postRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
 
     @Autowired
     private TagRepository tagRepository;
@@ -64,7 +58,7 @@ public class PostService {
         Post post = new Post();
         post.setHeading(postRef.getHeading());
         post.setTags(new HashSet<>(postRef.getTags()));
-        post.setCategory(postRef.getCategory());
+        post.setType(postRef.getType().name());
         post.setCreated(postRef.getCreated());
         post.setUpdated(postRef.getUpdated());
         post.setContent(postRef.getContent());
@@ -86,11 +80,7 @@ public class PostService {
         }
     }
 
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
-    }
-
-    public Optional<Post> getPostById(int id) {
+    public Optional<Post> findById(int id) {
         return postRepository.findById(id);
     }
 
@@ -98,17 +88,17 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-    public Post getBySlug(String postSlug) {
-        return postRepository.getBySlug(postSlug);
+    public Optional<Post> findBySlug(String slug) {
+        Post search = new Post();
+        search.setSlug(slug);
+        return postRepository.findOne(Example.of(search));
     }
 
     private void mapRequestToPost(PostCreateRequest request, Post post) {
         post.setHeading(request.getHeading());
         post.setExcerpt(request.getExcerpt());
         post.setContent(request.getContent());
-        post.setCategory(Optional.ofNullable(request.getCategory())
-                .map(integer -> categoryRepository.getReferenceById(integer))
-                .orElse(null));
+        post.setType(request.getType().name());
         post.setTags(request.getTags().stream()
                 .filter(Objects::nonNull)
                 .map(integer -> tagRepository.getReferenceById(integer))
@@ -126,25 +116,21 @@ public class PostService {
             if (postRepository.exists(Example.of(search))) {
                 log.warn(MessageFormat.format(ErrorMessage.OBJECT_ALREADY_EXIST_WITH_SLUG, "Post", wordpressPost.getSlug()));
             } else {
-                posts.add(createPost(new PostAdapter(wordpressPost, imageService, tagRepository, categoryRepository)));
+                posts.add(createPost(new PostAdapter(wordpressPost, imageService, tagRepository)));
             }
         }
         posts = postRepository.saveAllAndFlush(posts);
         return posts.size();
     }
 
-    public Set<Post> getPostsByCategory(Integer categoryId) {
-        Optional<Category> optional = categoryRepository.findById(categoryId);
-        if (optional.isPresent()) {
-            Category category = optional.get();
-            return category.getPosts();
-        }
-        return new HashSet<>(0);
+    public List<Post> findByType(PostType postType, int count) {
+        Post search = new Post();
+        search.setType(postType.name());
+        return postRepository.findAll(Example.of(search), Pageable.ofSize(count)).stream().toList();
     }
 
-    public List<Post> latest5() {
-        Page<Post> page = postRepository.findAll(Pageable.ofSize(5));
-        return page.get().toList();
+    public List<Post> findAll() {
+        return postRepository.findAll();
     }
 
     @Transactional

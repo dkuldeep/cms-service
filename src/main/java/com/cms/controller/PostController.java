@@ -2,19 +2,19 @@ package com.cms.controller;
 
 import com.cms.business.WordpressImport;
 import com.cms.constant.ErrorMessage;
-import com.cms.constant.DefaultCategory;
+import com.cms.constant.PostType;
 import com.cms.dto.DtoMapper;
 import com.cms.dto.ImageDto;
+import com.cms.dto.TypeDto;
 import com.cms.dto.request.PostCreateRequest;
 import com.cms.dto.response.ObjectCreated;
 import com.cms.dto.response.ObjectUpdated;
 import com.cms.dto.response.PostResponseDto;
 import com.cms.dto.wordpress.WordpressImportRequest;
-import com.cms.entity.Category;
 import com.cms.entity.Post;
 import com.cms.entity.Webpage;
 import com.cms.exception.ObjectNotFoundException;
-import com.cms.service.CategoryService;
+import com.cms.service.HasSlug;
 import com.cms.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,75 +32,50 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.Collections;
+import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.cms.constant.ErrorMessage.POST_CREATED;
 
 @RestController
 @RequestMapping("posts")
-public class PostController implements WordpressImport {
+public class PostController implements WordpressImport, HasSlug {
 
     @Autowired
     private PostService postService;
 
-    @Autowired
-    private CategoryService categoryService;
-
     @GetMapping
-    public List<PostResponseDto> getAllPosts(@RequestParam(required = false) String slug,
-                                             @RequestParam(required = false) Integer category) {
-        List<Post> posts;
-        if (Objects.nonNull(category) && Objects.nonNull(slug)) {
-            Set<Post> set = postService.getPostsByCategory(category);
-            posts = set.stream().filter(post -> post.getSlug().equals(slug)).collect(Collectors.toList());
-            return posts.stream().map(DtoMapper.POST_TO_DTO).collect(Collectors.toList());
-        } else {
-            if (Objects.nonNull(category)) {
-                posts = postService.getPostsByCategory(category).stream().toList();
-                return posts.stream().map(DtoMapper.POST_TO_DTO).collect(Collectors.toList());
-            }
-            if (Objects.nonNull(slug)) {
-                Post post = postService.getBySlug(slug);
-                if (Objects.isNull(post)) {
-                    throw new ObjectNotFoundException(String.format(ErrorMessage.POST_NOT_FOUND_WITH_SLUG, slug));
-                }
-                posts = Collections.singletonList(post);
-                return posts.stream().map(DtoMapper.POST_TO_DTO).collect(Collectors.toList());
-            }
-            posts = postService.getAllPosts();
-            return posts.stream().map(DtoMapper.POST_TO_DTO).collect(Collectors.toList());
+    public List<PostResponseDto> getAllPosts(@RequestParam(required = false) PostType type) {
+        if (type == null) {
+            return postService.findAll().stream().map(DtoMapper.POST_TO_DTO).toList();
         }
+        return postService.findByType(type, 100).stream().map(DtoMapper.POST_TO_DTO).toList();
     }
 
-    @GetMapping("latest5")
-    public List<PostResponseDto> latest5() {
-        List<Post> posts = postService.latest5();
-        return posts.stream()
-                .filter(post -> !DefaultCategory.getAllSlugs().contains(post.getCategory().getSlug()))
-                .sorted(Comparator.comparing(Webpage::getCreated))
-                .map(DtoMapper.POST_TO_DTO)
-                .toList();
+    @Override
+    @GetMapping("/slug/{slug}")
+    public Object getBySlug(@PathVariable String slug) {
+        Optional<Post> optional = postService.findBySlug(slug);
+        return optional.map(DtoMapper.POST_TO_DTO)
+                .orElseThrow(() -> new ObjectNotFoundException(MessageFormat.format(ErrorMessage.POST_NOT_FOUND_WITH_SLUG, slug)));
     }
 
     @GetMapping("latest3")
     public List<PostResponseDto> latest3() {
-        Optional<Category> optionalCategory = categoryService.findBySlug(DefaultCategory.BLOG.getSlug());
-        if (optionalCategory.isPresent()) {
-            return optionalCategory.get().getPosts().stream().sorted(Comparator.comparing(Webpage::getCreated)).map(DtoMapper.POST_TO_DTO).toList();
-        } else {
-            throw new ObjectNotFoundException(String.format(ErrorMessage.CATEGORY_NOT_FOUND_WITH_SLUG, DefaultCategory.BLOG.getSlug()));
-        }
+        return postService.findByType(PostType.BLOG, 3)
+                .stream()
+                .sorted(Comparator.comparing(Webpage::getCreated).reversed())
+                .map(DtoMapper.POST_TO_DTO)
+                .toList();
     }
 
     @GetMapping("{id}")
     public PostResponseDto findById(@PathVariable int id) {
-        Optional<Post> optionalPost = postService.getPostById(id);
+        Optional<Post> optionalPost = postService.findById(id);
         return optionalPost.map(DtoMapper.POST_TO_DTO)
                 .orElseThrow(() -> new ObjectNotFoundException(String.format(ErrorMessage.POST_BY_ID_NOT_FOUND, id)));
     }
@@ -140,5 +115,12 @@ public class PostController implements WordpressImport {
     @DeleteMapping("{id}/image")
     public void removeImage(@PathVariable("id") Integer id) throws IOException {
         postService.removeImage(id);
+    }
+
+    @GetMapping("types")
+    public List<TypeDto> getTypes() {
+        return Arrays.stream(PostType.values())
+                .map(postType -> new TypeDto(postType.name(), postType.getLabel()))
+                .collect(Collectors.toList());
     }
 }

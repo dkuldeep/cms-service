@@ -1,6 +1,6 @@
 package com.cms.dto;
 
-public class AbstractCategoryRequest {
+public class AbstractTagDto {
     private String name;
     private String slug;
     private String title;

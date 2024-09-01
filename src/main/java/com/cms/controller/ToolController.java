@@ -4,7 +4,7 @@ import com.cms.business.WordpressImport;
 import com.cms.constant.ErrorMessage;
 import com.cms.constant.ToolType;
 import com.cms.dto.DtoMapper;
-import com.cms.dto.ToolTypeDto;
+import com.cms.dto.TypeDto;
 import com.cms.dto.request.ToolCreateRequest;
 import com.cms.dto.response.ObjectCreated;
 import com.cms.dto.response.ObjectUpdated;
@@ -12,6 +12,7 @@ import com.cms.dto.response.ToolResponseDto;
 import com.cms.dto.wordpress.WordpressImportRequest;
 import com.cms.entity.Tool;
 import com.cms.exception.ObjectNotFoundException;
+import com.cms.service.HasSlug;
 import com.cms.service.ImageService;
 import com.cms.service.ToolService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("tools")
-public class ToolController implements WordpressImport {
+public class ToolController implements WordpressImport, HasSlug {
 
     @Autowired
     private ToolService toolService;
@@ -77,9 +78,9 @@ public class ToolController implements WordpressImport {
     }
 
     @GetMapping("types")
-    public List<ToolTypeDto> getToolTypes() {
+    public List<TypeDto> getToolTypes() {
         return Arrays.stream(ToolType.values())
-                .map(toolType -> new ToolTypeDto(toolType.name(), toolType.getLabel()))
+                .map(toolType -> new TypeDto(toolType.name(), toolType.getLabel()))
                 .collect(Collectors.toList());
     }
 
@@ -99,5 +100,13 @@ public class ToolController implements WordpressImport {
     public List<ToolResponseDto> getHeaderTools() {
         List<Tool> headerTools = toolService.getHeaderTools();
         return headerTools.stream().map(DtoMapper.TOOL_TO_DTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @GetMapping("/slug/{slug}")
+    public Object getBySlug(@PathVariable String slug) {
+        Optional<Tool> optional = toolService.findBySlug(slug);
+        return optional.map(DtoMapper.TOOL_TO_DTO)
+                .orElseThrow(() -> new ObjectNotFoundException(MessageFormat.format(ErrorMessage.TOOL_NOT_FOUND_WITH_SLUG, slug)));
     }
 }

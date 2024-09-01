@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import javax.validation.constraints.NotEmpty;
@@ -23,8 +22,8 @@ public class Post extends Webpage {
     @Column
     private String excerpt;
 
-    @ManyToOne
-    private Category category;
+    @Column(columnDefinition = "default 'UNCATEGORIZED'")
+    private String type;
 
     @ManyToMany
     @JoinTable(
@@ -56,12 +55,12 @@ public class Post extends Webpage {
         this.content = content;
     }
 
-    public Category getCategory() {
-        return category;
+    public String getType() {
+        return type;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Set<Tag> getTags() {

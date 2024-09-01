@@ -1,11 +1,11 @@
 package com.cms.business;
 
-import com.cms.entity.Category;
+import com.cms.constant.PostType;
 
 public interface PostRef extends CommonFieldsRef {
     String getHeading();
 
     String getExcerpt();
 
-    Category getCategory();
+    PostType getType();
 }

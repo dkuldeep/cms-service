@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ToolTypeDto {
+public class TypeDto {
     private String type;
     private String label;
 
-    public ToolTypeDto(String type, String label) {
+    public TypeDto(String type, String label) {
         this.type = type;
         this.label = label;
     }

@@ -1,14 +1,14 @@
 package com.cms.constant;
 
-public enum ObjectType {
-    TOOL("Tool"),
-    POST("Post"),
-    CATEGORY("Category"),
-    TAG("Tag");
+public enum PostType {
+    UNCATEGORIZED("Uncategorized"),
+    BLOG("Blog"),
+    DEMO("Demo"),
+    PAGE("Page");
 
     private final String label;
 
-    ObjectType(String label) {
+    PostType(String label) {
         this.label = label;
     }
 

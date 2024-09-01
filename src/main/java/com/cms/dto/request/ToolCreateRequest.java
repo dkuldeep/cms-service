@@ -1,6 +1,7 @@
 package com.cms.dto.request;
 
-import com.cms.dto.AbstractCategoryRequest;
+import com.cms.constant.ToolType;
+import com.cms.dto.AbstractTagDto;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
@@ -8,18 +9,18 @@ import java.util.Collections;
 import java.util.List;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ToolCreateRequest extends AbstractCategoryRequest {
+public class ToolCreateRequest extends AbstractTagDto {
 
-    private String type;
+    private ToolType type;
     private String content;
     private String tagline;
     private List<Integer> tags = Collections.emptyList();
 
-    public String getType() {
+    public ToolType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ToolType type) {
         this.type = type;
     }
 

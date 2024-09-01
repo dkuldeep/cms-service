@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 public class PostSnippetDto {
     private String slug;
     private String heading;
-    private CategorySnippetDto category;
     private LocalDateTime created;
     private String image;
     private String excerpt;
@@ -24,14 +23,6 @@ public class PostSnippetDto {
 
     public void setHeading(String heading) {
         this.heading = heading;
-    }
-
-    public CategorySnippetDto getCategory() {
-        return category;
-    }
-
-    public void setCategory(CategorySnippetDto category) {
-        this.category = category;
     }
 
     public LocalDateTime getCreated() {
