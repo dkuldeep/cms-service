@@ -1,7 +1,6 @@
-package com.cms.advice;
+package com.cms.exception;
 
 import com.cms.dto.ObjectNotFoundDto;
-import com.cms.exception.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

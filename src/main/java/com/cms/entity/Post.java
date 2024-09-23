@@ -1,11 +1,7 @@
 package com.cms.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import com.cms.constant.PostType;
+import jakarta.persistence.*;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.HashSet;
@@ -22,8 +18,9 @@ public class Post extends Webpage {
     @Column
     private String excerpt;
 
-    @Column(columnDefinition = "default 'UNCATEGORIZED'")
-    private String type;
+    @Column(columnDefinition = "VARCHAR(30)")
+    @Enumerated(value = EnumType.STRING)
+    private PostType type;
 
     @ManyToMany
     @JoinTable(
@@ -55,11 +52,11 @@ public class Post extends Webpage {
         this.content = content;
     }
 
-    public String getType() {
+    public PostType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(PostType type) {
         this.type = type;
     }
 

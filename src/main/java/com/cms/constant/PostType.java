@@ -3,7 +3,6 @@ package com.cms.constant;
 public enum PostType {
     UNCATEGORIZED("Uncategorized"),
     BLOG("Blog"),
-    DEMO("Demo"),
     PAGE("Page");
 
     private final String label;

@@ -1,6 +1,5 @@
 package com.cms.controller;
 
-import com.cms.business.WordpressImport;
 import com.cms.constant.ErrorMessage;
 import com.cms.constant.PostType;
 import com.cms.dto.DtoMapper;
@@ -10,7 +9,6 @@ import com.cms.dto.request.PostCreateRequest;
 import com.cms.dto.response.ObjectCreated;
 import com.cms.dto.response.ObjectUpdated;
 import com.cms.dto.response.PostResponseDto;
-import com.cms.dto.wordpress.WordpressImportRequest;
 import com.cms.entity.Post;
 import com.cms.entity.Webpage;
 import com.cms.exception.ObjectNotFoundException;
@@ -30,8 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -43,7 +39,7 @@ import static com.cms.constant.ErrorMessage.POST_CREATED;
 
 @RestController
 @RequestMapping("posts")
-public class PostController implements WordpressImport, HasSlug {
+public class PostController implements HasSlug {
 
     @Autowired
     private PostService postService;
@@ -96,13 +92,6 @@ public class PostController implements WordpressImport, HasSlug {
     @DeleteMapping("{id}")
     public void deleteById(@PathVariable("id") int id) {
         postService.deleteById(id);
-    }
-
-    @Override
-    @PostMapping("wordpress")
-    public ObjectCreated importFromWordpress(@RequestBody WordpressImportRequest request) throws MalformedURLException, URISyntaxException {
-        int count = postService.importFromWordpress(request.getType(), request.getValue());
-        return new ObjectCreated(count + " " + POST_CREATED);
     }
 
     @PatchMapping("{id}")

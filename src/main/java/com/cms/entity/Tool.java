@@ -1,11 +1,7 @@
 package com.cms.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import com.cms.constant.ToolType;
+import jakarta.persistence.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,8 +16,9 @@ public class Tool extends Webpage {
     @Column
     private String title;
 
-    @Column
-    private String type;
+    @Column(columnDefinition = "VARCHAR(30)")
+    @Enumerated(value = EnumType.STRING)
+    private ToolType type;
 
     @Column(length = Integer.MAX_VALUE)
     private String content;
@@ -45,11 +42,11 @@ public class Tool extends Webpage {
         this.name = name;
     }
 
-    public String getType() {
+    public ToolType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ToolType type) {
         this.type = type;
     }
 

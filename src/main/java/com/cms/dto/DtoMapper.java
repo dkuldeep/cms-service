@@ -48,7 +48,7 @@ public class DtoMapper {
 
     public static final Function<Post, PostResponseDto> POST_TO_DTO = post -> {
         PostResponseDto dto = new PostResponseDto();
-        dto.setType(POST_TYPE_TO_DTO.apply(Optional.ofNullable(post.getType()).map(PostType::valueOf).orElse(PostType.UNCATEGORIZED)));
+        dto.setType(POST_TYPE_TO_DTO.apply(Optional.ofNullable(post.getType()).orElse(PostType.UNCATEGORIZED)));
         dto.setId(post.getId());
         dto.setHeading(post.getHeading());
         dto.setUpdated(post.getUpdated());
@@ -64,7 +64,7 @@ public class DtoMapper {
 
     public static final Function<Tool, ToolResponseDto> TOOL_TO_DTO = tool -> {
         ToolResponseDto dto = new ToolResponseDto();
-        dto.setType(TOOL_TYPE_TO_DTO.apply(ToolType.getTypeByName(tool.getType())));
+        dto.setType(TOOL_TYPE_TO_DTO.apply(tool.getType()));
         dto.setContent(tool.getContent());
         dto.setTagline(tool.getTagline());
         dto.setTags(tool.getTags().stream().map(TAG_TO_DTO).toList());

@@ -1,10 +1,7 @@
 package com.cms.service;
 
-import com.cms.business.ToolAdapter;
-import com.cms.business.ToolRef;
 import com.cms.constant.ErrorMessage;
 import com.cms.dto.request.ToolCreateRequest;
-import com.cms.dto.wordpress.WordpressPost;
 import com.cms.entity.Tool;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.repository.TagRepository;
@@ -16,13 +13,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,46 +34,10 @@ public class ToolService {
     private ToolRepository toolRepository;
 
     @Autowired
-    private WordpressService wordpressService;
-
-    @Autowired
-    private ImageService imageService;
-
-    @Autowired
     private TagRepository tagRepository;
 
     public List<Tool> findAll() {
         return toolRepository.findAll();
-    }
-
-    public int importFromWordpress(String type, String value) throws MalformedURLException, URISyntaxException {
-        List<WordpressPost> wordpressPosts = wordpressService.fetchPosts(value, type);
-        List<Tool> tools = new ArrayList<>(0);
-        for (WordpressPost wordpressPost : wordpressPosts) {
-            Tool search = new Tool();
-            search.setSlug(wordpressPost.getSlug());
-            Example<Tool> toolExample = Example.of(search);
-            if (toolRepository.exists(toolExample)) {
-                log.warn("Tool with slug '{}' already exists, ignoring it.", wordpressPost.getSlug());
-            } else {
-                tools.add(addNewTool(new ToolAdapter(wordpressPost, imageService, tagRepository)));
-            }
-        }
-        toolRepository.saveAllAndFlush(tools);
-        return tools.size();
-    }
-
-    public Tool addNewTool(ToolRef toolRef) {
-        Tool tool = new Tool();
-        tool.setTagline(toolRef.getTagline());
-        tool.setName(toolRef.getName());
-        tool.setType(toolRef.getType());
-        tool.setContent(toolRef.getContent());
-        tool.setTitle(toolRef.getTitle());
-        tool.setSlug(toolRef.getSlug());
-        tool.setDescription(toolRef.getDescription());
-        tool.setTags(new HashSet<>(toolRef.getTags()));
-        return tool;
     }
 
     public Tool addNewTool(ToolCreateRequest request) {
@@ -134,7 +92,7 @@ public class ToolService {
 
     private void mapRequestToTool(ToolCreateRequest request, Tool tool) {
         tool.setName(request.getName());
-        tool.setType(request.getType().name());
+        tool.setType(request.getType());
         tool.setContent(request.getContent());
         tool.setTagline(request.getTagline());
         tool.setTags(request.getTags().stream()

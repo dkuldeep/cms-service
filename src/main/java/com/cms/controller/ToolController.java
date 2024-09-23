@@ -1,6 +1,5 @@
 package com.cms.controller;
 
-import com.cms.business.WordpressImport;
 import com.cms.constant.ErrorMessage;
 import com.cms.constant.ToolType;
 import com.cms.dto.DtoMapper;
@@ -9,11 +8,9 @@ import com.cms.dto.request.ToolCreateRequest;
 import com.cms.dto.response.ObjectCreated;
 import com.cms.dto.response.ObjectUpdated;
 import com.cms.dto.response.ToolResponseDto;
-import com.cms.dto.wordpress.WordpressImportRequest;
 import com.cms.entity.Tool;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.service.HasSlug;
-import com.cms.service.ImageService;
 import com.cms.service.ToolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -38,13 +33,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("tools")
-public class ToolController implements WordpressImport, HasSlug {
+public class ToolController implements HasSlug {
 
     @Autowired
     private ToolService toolService;
-
-    @Autowired
-    private ImageService imageService;
 
     @GetMapping
     public List<ToolResponseDto> getAllTools(@RequestParam(required = false) String slug) {
@@ -82,13 +74,6 @@ public class ToolController implements WordpressImport, HasSlug {
         return Arrays.stream(ToolType.values())
                 .map(toolType -> new TypeDto(toolType.name(), toolType.getLabel()))
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    @PostMapping("wordpress")
-    public ObjectCreated importFromWordpress(@RequestBody WordpressImportRequest request) throws MalformedURLException, URISyntaxException {
-        int count = toolService.importFromWordpress(request.getType(), request.getValue());
-        return new ObjectCreated(count + " " + "Tools Created.");
     }
 
     @DeleteMapping("/{id}")

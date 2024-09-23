@@ -1,11 +1,8 @@
 package com.cms.service;
 
-import com.cms.business.PostAdapter;
-import com.cms.business.PostRef;
 import com.cms.constant.ErrorMessage;
 import com.cms.constant.PostType;
 import com.cms.dto.request.PostCreateRequest;
-import com.cms.dto.wordpress.WordpressPost;
 import com.cms.entity.Post;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.repository.PostRepository;
@@ -20,12 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,30 +34,17 @@ public class PostService {
     private TagRepository tagRepository;
 
     @Autowired
-    private WordpressService wordpressService;
-
-    @Autowired
     private ImageService imageService;
 
     public Post createPost(PostCreateRequest request) {
-        Post post = new Post();
-        mapRequestToPost(request, post);
-        post.setCreated(LocalDateTime.now());
-        return postRepository.saveAndFlush(post);
-    }
-
-    public Post createPost(PostRef postRef) {
-        Post post = new Post();
-        post.setHeading(postRef.getHeading());
-        post.setTags(new HashSet<>(postRef.getTags()));
-        post.setType(postRef.getType().name());
-        post.setCreated(postRef.getCreated());
-        post.setUpdated(postRef.getUpdated());
-        post.setContent(postRef.getContent());
-        post.setExcerpt(postRef.getExcerpt());
-        post.setDescription(postRef.getDescription());
-        post.setSlug(postRef.getSlug());
-        return post;
+        try {
+            Post post = new Post();
+            mapRequestToPost(request, post);
+            post.setCreated(LocalDateTime.now());
+            return postRepository.saveAndFlush(post);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
@@ -98,7 +77,7 @@ public class PostService {
         post.setHeading(request.getHeading());
         post.setExcerpt(request.getExcerpt());
         post.setContent(request.getContent());
-        post.setType(request.getType().name());
+        post.setType(Optional.of(request).map(PostCreateRequest::getType).orElse(PostType.UNCATEGORIZED));
         post.setTags(request.getTags().stream()
                 .filter(Objects::nonNull)
                 .map(integer -> tagRepository.getReferenceById(integer))
@@ -107,25 +86,9 @@ public class PostService {
         post.setDescription(request.getDescription());
     }
 
-    public int importFromWordpress(String type, String value) throws MalformedURLException, URISyntaxException {
-        List<WordpressPost> wordpressPosts = wordpressService.fetchPosts(value, type);
-        List<Post> posts = new ArrayList<>(wordpressPosts.size());
-        for (WordpressPost wordpressPost : wordpressPosts) {
-            Post search = new Post();
-            search.setSlug(wordpressPost.getSlug());
-            if (postRepository.exists(Example.of(search))) {
-                log.warn(MessageFormat.format(ErrorMessage.OBJECT_ALREADY_EXIST_WITH_SLUG, "Post", wordpressPost.getSlug()));
-            } else {
-                posts.add(createPost(new PostAdapter(wordpressPost, imageService, tagRepository)));
-            }
-        }
-        posts = postRepository.saveAllAndFlush(posts);
-        return posts.size();
-    }
-
     public List<Post> findByType(PostType postType, int count) {
         Post search = new Post();
-        search.setType(postType.name());
+        search.setType(postType);
         return postRepository.findAll(Example.of(search), Pageable.ofSize(count)).stream().toList();
     }
 

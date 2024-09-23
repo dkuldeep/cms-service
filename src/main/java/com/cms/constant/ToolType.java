@@ -19,6 +19,8 @@ public enum ToolType {
     }
 
     public static ToolType getTypeByName(String name) {
-        return Arrays.stream(values()).filter(toolType -> toolType.name().equals(name)).findFirst().orElse(UNCATEGORIZED);
+        return Arrays.stream(values())
+                .filter(toolType -> toolType.name().equals(name))
+                .findFirst().orElse(UNCATEGORIZED);
     }
 }
