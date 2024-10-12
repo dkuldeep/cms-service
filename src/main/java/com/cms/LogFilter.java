@@ -8,9 +8,8 @@ import jakarta.servlet.ServletResponse;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.StringJoiner;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class LogFilter implements Filter {
@@ -18,11 +17,11 @@ public class LogFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        logger.info(Stream.of(
-                servletRequest.getRemoteAddr(),
-                servletRequest.getRemoteHost(),
-                String.valueOf(servletRequest.getRemotePort()))
-                .collect(Collectors.joining(",", "[", "]")));
+        StringJoiner joiner = new StringJoiner(",", "[", "]");
+        joiner.add(servletRequest.getRemoteAddr());
+        joiner.add(servletRequest.getRemoteHost());
+        joiner.add(String.valueOf(servletRequest.getRemotePort()));
+        logger.info(joiner.toString());
         filterChain.doFilter(servletRequest, servletResponse);
     }
 }

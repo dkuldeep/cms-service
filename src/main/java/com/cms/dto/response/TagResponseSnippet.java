@@ -1,11 +1,24 @@
-package com.cms.dto;
+package com.cms.dto.response;
 
-public class AbstractTagResponse {
+public class TagResponseSnippet {
     private Integer id;
     private String name;
     private String slug;
     private String title;
     private String description;
+    private Integer count;
+
+    public TagResponseSnippet() {
+    }
+
+    public TagResponseSnippet(TagResponseSnippet that) {
+        this.id = that.id;
+        this.name = that.name;
+        this.slug = that.slug;
+        this.title = that.title;
+        this.description = that.description;
+        this.count = that.count;
+    }
 
     public String getSlug() {
         return slug;
@@ -45,5 +58,13 @@ public class AbstractTagResponse {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
     }
 }

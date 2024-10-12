@@ -9,7 +9,6 @@ import com.cms.repository.PostRepository;
 import com.cms.repository.TagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,14 +26,18 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private static final Logger log = LoggerFactory.getLogger(PostService.class);
-    @Autowired
-    private PostRepository postRepository;
 
-    @Autowired
-    private TagRepository tagRepository;
+    private final PostRepository postRepository;
 
-    @Autowired
-    private ImageService imageService;
+    private final TagRepository tagRepository;
+
+    private final ImageService imageService;
+
+    public PostService(PostRepository postRepository, TagRepository tagRepository, ImageService imageService) {
+        this.postRepository = postRepository;
+        this.tagRepository = tagRepository;
+        this.imageService = imageService;
+    }
 
     public Post createPost(PostCreateRequest request) {
         try {
@@ -80,7 +83,7 @@ public class PostService {
         post.setType(Optional.of(request).map(PostCreateRequest::getType).orElse(PostType.UNCATEGORIZED));
         post.setTags(request.getTags().stream()
                 .filter(Objects::nonNull)
-                .map(integer -> tagRepository.getReferenceById(integer))
+                .map(tagRepository::getReferenceById)
                 .collect(Collectors.toSet()));
         post.setSlug(request.getSlug());
         post.setDescription(request.getDescription());

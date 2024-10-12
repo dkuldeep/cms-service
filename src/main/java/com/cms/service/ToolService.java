@@ -8,10 +8,10 @@ import com.cms.repository.TagRepository;
 import com.cms.repository.ToolRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -30,11 +30,14 @@ public class ToolService {
     @Value("${header.tools}")
     private String headerTools;
 
-    @Autowired
-    private ToolRepository toolRepository;
+    private final ToolRepository toolRepository;
 
-    @Autowired
-    private TagRepository tagRepository;
+    private final TagRepository tagRepository;
+
+    public ToolService(ToolRepository toolRepository, TagRepository tagRepository) {
+        this.toolRepository = toolRepository;
+        this.tagRepository = tagRepository;
+    }
 
     public List<Tool> findAll() {
         return toolRepository.findAll();
@@ -47,6 +50,7 @@ public class ToolService {
         return toolRepository.saveAndFlush(tool);
     }
 
+    @Transactional
     public void updateTool(Integer id, ToolCreateRequest request) {
         Optional<Tool> optional = toolRepository.findById(id);
         if (optional.isPresent()) {
@@ -97,7 +101,7 @@ public class ToolService {
         tool.setTagline(request.getTagline());
         tool.setTags(request.getTags().stream()
                 .filter(Objects::nonNull)
-                .map(integer -> tagRepository.getReferenceById(integer))
+                .map(tagRepository::getReferenceById)
                 .collect(Collectors.toSet()));
         tool.setDescription(request.getDescription());
         tool.setSlug(request.getSlug());

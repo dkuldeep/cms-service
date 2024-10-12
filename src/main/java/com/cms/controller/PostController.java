@@ -8,13 +8,13 @@ import com.cms.dto.TypeDto;
 import com.cms.dto.request.PostCreateRequest;
 import com.cms.dto.response.ObjectCreated;
 import com.cms.dto.response.ObjectUpdated;
-import com.cms.dto.response.PostResponseDto;
+import com.cms.dto.response.PostResponse;
+import com.cms.dto.response.PostResponseSnippet;
 import com.cms.entity.Post;
 import com.cms.entity.Webpage;
 import com.cms.exception.ObjectNotFoundException;
 import com.cms.service.HasSlug;
 import com.cms.service.PostService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -33,44 +33,46 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.cms.constant.ErrorMessage.POST_CREATED;
 
 @RestController
-@RequestMapping("posts")
-public class PostController implements HasSlug {
+@RequestMapping("/posts")
+public class PostController implements HasSlug<PostResponse> {
 
-    @Autowired
-    private PostService postService;
+    private final PostService postService;
+
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     @GetMapping
-    public List<PostResponseDto> getAllPosts(@RequestParam(required = false) PostType type) {
+    public List<PostResponseSnippet> getAllPosts(@RequestParam(required = false) PostType type) {
         if (type == null) {
-            return postService.findAll().stream().map(DtoMapper.POST_TO_DTO).toList();
+            return postService.findAll().stream().map(DtoMapper.POST_TO_SNIPPET).toList();
         }
-        return postService.findByType(type, 100).stream().map(DtoMapper.POST_TO_DTO).toList();
+        return postService.findByType(type, 100).stream().map(DtoMapper.POST_TO_SNIPPET).toList();
     }
 
     @Override
     @GetMapping("/slug/{slug}")
-    public Object getBySlug(@PathVariable String slug) {
+    public PostResponse getBySlug(@PathVariable String slug) {
         Optional<Post> optional = postService.findBySlug(slug);
         return optional.map(DtoMapper.POST_TO_DTO)
                 .orElseThrow(() -> new ObjectNotFoundException(MessageFormat.format(ErrorMessage.POST_NOT_FOUND_WITH_SLUG, slug)));
     }
 
-    @GetMapping("latest3")
-    public List<PostResponseDto> latest3() {
+    @GetMapping("/latest3")
+    public List<PostResponseSnippet> latest3() {
         return postService.findByType(PostType.BLOG, 3)
                 .stream()
                 .sorted(Comparator.comparing(Webpage::getCreated).reversed())
-                .map(DtoMapper.POST_TO_DTO)
+                .map(DtoMapper.POST_TO_SNIPPET)
                 .toList();
     }
 
-    @GetMapping("{id}")
-    public PostResponseDto findById(@PathVariable int id) {
+    @GetMapping("/{id}")
+    public PostResponse findById(@PathVariable int id) {
         Optional<Post> optionalPost = postService.findById(id);
         return optionalPost.map(DtoMapper.POST_TO_DTO)
                 .orElseThrow(() -> new ObjectNotFoundException(String.format(ErrorMessage.POST_BY_ID_NOT_FOUND, id)));
@@ -82,34 +84,34 @@ public class PostController implements HasSlug {
         return new ObjectCreated(post.getId(), POST_CREATED);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ObjectUpdated updateById(@RequestBody PostCreateRequest request,
                                     @PathVariable("id") int id) {
         postService.updatePost(request, id);
         return new ObjectUpdated(ErrorMessage.POST_UPDATED);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void deleteById(@PathVariable("id") int id) {
         postService.deleteById(id);
     }
 
-    @PatchMapping("{id}")
+    @PatchMapping("/{id}")
     public ImageDto uploadImage(@PathVariable("id") Integer id,
                                 @RequestParam("file") MultipartFile file) throws IOException {
         String path = postService.uploadImage(id, file);
         return new ImageDto(path);
     }
 
-    @DeleteMapping("{id}/image")
-    public void removeImage(@PathVariable("id") Integer id) throws IOException {
+    @DeleteMapping("/{id}/image")
+    public void removeImage(@PathVariable("id") Integer id) {
         postService.removeImage(id);
     }
 
-    @GetMapping("types")
+    @GetMapping("/types")
     public List<TypeDto> getTypes() {
         return Arrays.stream(PostType.values())
                 .map(postType -> new TypeDto(postType.name(), postType.getLabel()))
-                .collect(Collectors.toList());
+                .toList();
     }
 }
