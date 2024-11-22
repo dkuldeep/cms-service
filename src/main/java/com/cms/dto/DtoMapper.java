@@ -65,7 +65,12 @@ public class DtoMapper {
         PostResponse dto = new PostResponse(POST_TO_SNIPPET.apply(post));
         dto.setContent(post.getContent());
         dto.setUpdated(post.getUpdated());
-        dto.setRelated(post.getTags().stream().flatMap(tag -> tag.getPosts().stream()).distinct().map(POST_TO_SNIPPET).toList());
+        dto.setRelated(post.getTags()
+                .stream().flatMap(tag -> tag.getPosts().stream())
+                .distinct()
+                .filter(post1 -> !post1.getSlug().equalsIgnoreCase(post.getSlug()))
+                .map(POST_TO_SNIPPET)
+                .toList());
         return dto;
     };
 
@@ -85,7 +90,12 @@ public class DtoMapper {
     public static final Function<Tool, ToolResponse> TOOL_TO_DTO = tool -> {
         ToolResponse dto = new ToolResponse(TOOL_TO_SNIPPET.apply(tool));
         dto.setContent(tool.getContent());
-        dto.setRelatedBlogs(tool.getTags().stream().flatMap(tag -> tag.getPosts().stream()).map(POST_TO_SNIPPET).toList());
+        dto.setRelatedBlogs(tool.getTags()
+                .stream()
+                .flatMap(tag -> tag.getPosts().stream())
+                .distinct()
+                .map(POST_TO_SNIPPET)
+                .toList());
         return dto;
     };
 
