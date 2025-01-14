@@ -11,7 +11,6 @@ import java.util.List;
 public class PostResponse extends PostResponseSnippet {
 
     private String content;
-    private LocalDateTime updated;
     private List<PostResponseSnippet> related = new ArrayList<>(0);
 
     public PostResponse(PostResponseSnippet postResponseSnippet) {
@@ -34,11 +33,5 @@ public class PostResponse extends PostResponseSnippet {
         this.content = content;
     }
 
-    public LocalDateTime getUpdated() {
-        return updated;
-    }
 
-    public void setUpdated(LocalDateTime updated) {
-        this.updated = updated;
-    }
 }

@@ -43,6 +43,7 @@ public class DtoMapper {
         dto.setSlug(post.getSlug());
         dto.setExcerpt(post.getExcerpt());
         dto.setCreated(post.getCreated());
+        dto.setUpdated(post.getUpdated());
         dto.setTags(post.getTags().stream().map(TAG_TO_SNIPPET).toList());
         dto.setType(POST_TYPE_TO_DTO.apply(Optional.ofNullable(post.getType()).orElse(PostType.UNCATEGORIZED)));
         dto.setId(post.getId());
@@ -64,7 +65,6 @@ public class DtoMapper {
     public static final Function<Post, PostResponse> POST_TO_DTO = post -> {
         PostResponse dto = new PostResponse(POST_TO_SNIPPET.apply(post));
         dto.setContent(post.getContent());
-        dto.setUpdated(post.getUpdated());
         dto.setRelated(post.getTags()
                 .stream().flatMap(tag -> tag.getPosts().stream())
                 .distinct()

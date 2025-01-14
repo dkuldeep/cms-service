@@ -1,7 +1,6 @@
 package com.cms.dto.request;
 
 import com.cms.constant.ToolType;
-import com.cms.dto.AbstractTagDto;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 

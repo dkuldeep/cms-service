@@ -1,4 +1,4 @@
-package com.cms.dto;
+package com.cms.dto.request;
 
 public class AbstractTagDto {
     private String name;

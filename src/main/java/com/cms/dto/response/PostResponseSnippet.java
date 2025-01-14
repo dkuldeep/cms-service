@@ -12,6 +12,7 @@ public class PostResponseSnippet {
     private String slug;
     private String excerpt;
     private LocalDateTime created;
+    private LocalDateTime updated;
     private List<TagResponseSnippet> tags = Collections.emptyList();
     private TypeDto type;
     private Integer id;
@@ -30,6 +31,7 @@ public class PostResponseSnippet {
         this.type = other.type;
         this.id = other.id;
         this.description = other.description;
+        this.updated = other.updated;
     }
 
     public String getSlug() {
@@ -101,5 +103,11 @@ public class PostResponseSnippet {
         this.description = description;
     }
 
+    public LocalDateTime getUpdated() {
+        return updated;
+    }
 
+    public void setUpdated(LocalDateTime updated) {
+        this.updated = updated;
+    }
 }
